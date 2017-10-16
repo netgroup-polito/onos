@@ -28,6 +28,8 @@ import org.onosproject.net.behaviour.Pipeliner;
 import org.onosproject.net.behaviour.PipelinerContext;
 import org.onosproject.net.driver.AbstractHandlerBehaviour;
 import org.onosproject.net.flow.FlowRule;
+import org.onosproject.net.flow.FlowRuleOperations;
+import org.onosproject.net.flow.FlowRuleOperationsContext;
 import org.onosproject.net.flow.FlowRuleService;
 import org.onosproject.net.flowobjective.FilteringObjective;
 import org.onosproject.net.flowobjective.ForwardingObjective;
@@ -76,11 +78,50 @@ public class MyDevicePipeliner extends AbstractHandlerBehaviour implements Pipel
 
     @Override
     public void filter(FilteringObjective filterObjective) { //TODO
+        /*
+        //First write some filtering then create the flow rule and install the Objective
 
+         FlowRule.Builder ruleBuilder = DefaultFlowRule.builder()
+                .forDevice(deviceId)
+                .withSelector(selector.build())
+                .withTreatment(actions.build())
+                .fromApp(filterObjective.appId())
+                .forTable(evcId)
+                .withPriority(filterObjective.priority());
+
+        if (filterObjective.permanent()) {
+            ruleBuilder.makePermanent();
+        } else {
+            ruleBuilder.makeTemporary(filterObjective.timeout());
+        }
+
+        installObjective(ruleBuilder, filterObjective);
+
+        log.debug("filter() of MyDevicePipeliner called for "
+                + handler().data().deviceId().uri()
+                + ". Objective: " + filterObjective);
+         */
     }
 
     @Override
     public void forward(ForwardingObjective forwardObjective) { //TODO
+        /*
+        // First write some criteria then create the flow rule and install the Objective
+
+          FlowRule.Builder ruleBuilder = DefaultFlowRule.builder()
+                        .forDevice(deviceId)
+                        .withSelector(selector)
+                        .fromApp(forwardObjective.appId())
+                        .withPriority(forwardObjective.priority())
+                        .withTreatment(forwardObjective.treatment());
+
+                if (forwardObjective.permanent()) {
+                    ruleBuilder.makePermanent();
+                } else {
+                    ruleBuilder.makeTemporary(forwardObjective.timeout());
+                }
+                installObjective(ruleBuilder, forwardObjective);
+         */
 
     }
 
@@ -106,7 +147,32 @@ public class MyDevicePipeliner extends AbstractHandlerBehaviour implements Pipel
         return new ArrayList<String>();
     }
 
-    protected void installObjective(FlowRule.Builder ruleBuilder, Objective objective) { //TODO
 
+    protected void installObjective(FlowRule.Builder ruleBuilder, Objective objective) {
+        FlowRuleOperations.Builder flowBuilder = FlowRuleOperations.builder();
+        switch (objective.op()) {
+
+            case ADD:
+                flowBuilder.add(ruleBuilder.build());
+                break;
+            case REMOVE:
+                flowBuilder.remove(ruleBuilder.build());
+                break;
+            default:
+                log.warn("Unknown operation {}", objective.op());
+        }
+
+        flowRuleService.apply(flowBuilder.build(new FlowRuleOperationsContext() {
+            @Override
+            public void onSuccess(FlowRuleOperations ops) {
+                objective.context().ifPresent(context -> context.onSuccess(objective));
+            }
+
+            @Override
+            public void onError(FlowRuleOperations ops) {
+                objective.context()
+                        .ifPresent(context -> context.onError(objective, ObjectiveError.FLOWINSTALLATIONFAILED));
+            }
+        }));
     }
 }
