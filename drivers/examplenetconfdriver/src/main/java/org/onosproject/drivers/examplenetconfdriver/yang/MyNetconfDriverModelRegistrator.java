@@ -50,6 +50,17 @@ import org.onosproject.yang.gen.v1.openconfigtypes.rev20170816.OpenconfigTypes;
 import org.onosproject.yang.gen.v1.openconfigyangtypes.rev20170730.OpenconfigYangTypes;
 import org.onosproject.yang.gen.v1.rfc2544.rev20151020.Rfc2544;
 import org.onosproject.yang.gen.v1.svcactivationtypes.rev20151027.SvcActivationTypes;
+
+//import org.onosproject.yang.gen.v1.y1564.rev20151029.Y1564;
+import org.onosproject.yang.gen.v1.tiesseaccesslist.rev20170707.TiesseAccessList;
+import org.onosproject.yang.gen.v1.tiessearp.rev20170529.TiesseArp;
+import org.onosproject.yang.gen.v1.tiessebgp.rev20170225.TiesseBgp;
+import org.onosproject.yang.gen.v1.tiessecli.rev20170703.TiesseCli;
+import org.onosproject.yang.gen.v1.tiesseip.rev20170521.TiesseIp;
+import org.onosproject.yang.gen.v1.tiesseospf.rev20170225.TiesseOspf;
+import org.onosproject.yang.gen.v1.tiesseprefixlist.rev20170707.TiessePrefixList;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
+import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlan;
 import org.onosproject.yang.model.DefaultYangModuleId;
 import org.onosproject.yang.model.YangModuleId;
 import org.onosproject.yang.runtime.AppModuleInfo;
@@ -148,6 +159,24 @@ public class MyNetconfDriverModelRegistrator extends AbstractYangModelRegistrato
                 new DefaultAppModuleInfo(OpenconfigTypes.class, null));
         appInfo.put(new DefaultYangModuleId("openconfig-yang-types", "2017-07-30"),
                 new DefaultAppModuleInfo(OpenconfigYangTypes.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-access-list", "2017-07-07"),
+                new DefaultAppModuleInfo(TiesseAccessList.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-arp", "2017-05-29"),
+                new DefaultAppModuleInfo(TiesseArp.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-bgp", "2017-02-25"),
+                new DefaultAppModuleInfo(TiesseBgp.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-cli", "2017-07-03"),
+                new DefaultAppModuleInfo(TiesseCli.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-ip", "2017-05-21"),
+                new DefaultAppModuleInfo(TiesseIp.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-ospf", "2017-02-25"),
+                new DefaultAppModuleInfo(TiesseOspf.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-prefix-list", "2017-07-07"),
+                new DefaultAppModuleInfo(TiessePrefixList.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-vlan", "2017-02-25"),
+                new DefaultAppModuleInfo(TiesseVlan.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-switch", "2017-05-22"),
+                new DefaultAppModuleInfo(TiesseSwitch.class, null));
         return ImmutableMap.copyOf(appInfo);
     }
 }

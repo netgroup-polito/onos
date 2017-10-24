@@ -1,0 +1,706 @@
+module tiesse-ospf {
+
+    namespace "urn:ietf:params:xml:ns:yang:tiesse-ospf";
+    prefix "ospf";
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tiesse-cli {
+        prefix cli;
+    }
+
+    import tiesse-ip {
+        prefix ip;
+    }
+
+    import tiesse-prefix-list {
+        prefix pfxlst;
+    }
+
+    import tiesse-access-list {
+        prefix acllst;
+    }
+
+    description "tiesse-ospf module";
+    contact "f.antonini@tiesse.com";
+
+    revision "2017-02-25" {
+        description "Removed augmentation";
+    }
+
+    revision "2016-11-24" {
+        description
+            "Initial revision.";
+    }
+    
+    typedef enum-abr-type {
+        type enumeration {
+            enum cisco;
+            enum ibm;
+            enum shortcut;
+            enum standard;
+        }
+    }
+
+    typedef enum_redistribute_af {
+        type enumeration {
+            enum connected;
+            enum kernel;
+            enum bgp;
+            enum static;
+            enum rip;
+            enum isis;
+        }
+    }    
+
+   container ospf {
+        leaf active {
+            type cli:onoff;
+            description "Activate ospf | Deactivate ospf";
+        }  
+        leaf debug {
+            type empty;
+        }
+        leaf rfc1583compatibility {
+            type empty;
+        }
+        leaf router-id {
+            type inet:ipv4-address-no-zone;
+        }
+        container log-adjacency-changes {
+            presence true;
+            leaf detail {
+                type empty;
+            }
+            // fixme: vedi ticket #66 su presence container
+        }
+        leaf abr-type {
+            type enum-abr-type;
+        } 
+        leaf default-metric {
+            type uint32 {
+                range "0..16777214";
+            }
+        }
+        list directive {
+            key cmd;
+            leaf cmd {
+                type string;
+                description "Add ospf directive";
+            }
+            description 'directives list';
+            // fixme: inserire un tipo .DIRECTIVE per proporre più stringhe sulla stessa riga; al momento è gestito  con ""
+            // aggiungere inoltre tutti i check eseguiti dentro il comando cmd_set_ospf_direct: si potrebbe pensare di eseguire i check
+            // strutturando maggiormente la lista directive in più foglie e usare il costrutto when. In questa ipotesi si deve capire bene la logica
+            // con cui possono apparire i vari nomi
+            // un alternativa potrebbe essere quella dell'uso di una yang extension per specificare la funzione di prepprocessing
+            // a questo proposito vedi commento su ticket #30
+        }
+        list network {
+            key "address area";
+            leaf address {
+                type inet:ipv4-prefix;
+                cli:hidden;
+            }
+            leaf area {
+                    type union {
+                        type inet:ipv4-address-no-zone;
+                        type uint32;
+                    }
+            }
+        }
+        leaf passive-interface {
+            type union {
+                type string;
+                type enumeration {
+                    enum default;
+                }
+                type string {
+                    pattern '(br0|br1|br2|br3|br4|br5|br6|br7|eth0|eth1|eth2|eth3|eth4|ppp0|ppp1|pptp)';
+                }
+                //type eth:eth-ref;
+            }
+        }
+        container timers {
+            container throttle {
+                list spf {
+                    key 'delay-msec inithold-msec maxhold-msec';
+                    leaf delay-msec {
+                        type uint32 {
+                            range "0..600000";
+                        }
+                    }
+                    leaf inithold-msec {
+                        type uint32 {
+                            range "0..600000";
+                        }
+                    }
+                    leaf maxhold-msec {
+                        type uint32 {
+                            range "0..600000";
+                        }
+                    }
+                    max-elements 1;
+                }
+            }
+        } // close container timers
+        container distance {
+            leaf distance {
+                type uint16 {
+                    range "1..255";
+                }
+                cli:hidden;
+            }
+            container ospf {
+                leaf external {
+                    type uint16 {
+                        range "1..255";
+                    }
+                }
+                leaf inter-area {
+                    type uint16 {
+                        range "1..255";
+                    }
+                }
+                leaf intra-area {
+                    type uint16 {
+                        range "1..255";
+                    }
+                }                                    
+            }
+        } // close container distance 
+        list neighbor {
+            key address;
+            leaf address {
+                type inet:ipv4-address-no-zone;
+            }
+            leaf priority {
+                type uint8 {
+                    range "0..255";
+                }
+            }
+        } 
+        list area {
+            must 'count(current()/*) > 2' {
+                error-message "at least one leaf must be set!";
+            }
+            key area-id;
+            leaf area-id {
+                type union {
+                        type inet:ipv4-address-no-zone;
+                        type uint32 {
+                            range "0..2147483647";
+                        }                 
+                }
+            }
+            container authentication {
+                presence true;
+                leaf message-digest {
+                    type empty;
+                }
+                // fixme: vedi ticket #66
+            }
+            leaf default-cost {
+                type uint32 {
+                    range "0..16777215";
+                }
+            }
+            leaf export-list {
+                type string;
+            }
+            leaf import-list {
+                type string;
+            } 
+            container filter-list {
+                list filter-list-in {
+                    key 'prefix in';
+                    leaf prefix {
+                        type string;
+                    }
+                    leaf in {
+                        type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                    }
+                    max-elements 1;
+                    cli:hidden;
+                }
+                list filter-list-out {
+                    key 'prefix out';
+                    leaf prefix {
+                        type string;
+                    }
+                    leaf out {
+                        type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                    }
+                    max-elements 1;
+                    cli:hidden;
+                }
+            }
+            container nssa {
+                list nssa-list {
+                    key nssa-id;
+                    leaf nssa-id {
+                        type enumeration {
+                            enum translate-always;
+                            enum translate-candidate;
+                            enum translate-never;
+                        }
+                    }
+                    leaf no-summary {
+                        type empty;
+                    }
+                    max-elements 1;
+                    cli:hidden;
+                    cli:showdeeper;
+                    cli:reinit;
+                }
+            }
+            list range {
+                key 'rangekey';
+                leaf rangekey {
+                    type inet:ipv4-prefix;
+                }
+                leaf advertise-enum {
+                    type enumeration {
+                        enum advertise;
+                        enum not-advertise;
+                    }
+                    cli:hidden;
+                }
+                leaf cost {
+                    type uint32 {
+                        range "0..16777215";
+                    }
+                }
+                leaf substitute {
+                     type inet:ipv4-prefix;
+                }
+            }
+            leaf shortcut {
+                type enumeration {
+                    enum default;
+                    enum disable;
+                    enum enable;
+                }
+            }
+            container stub {
+                presence true;
+                leaf no-summary {
+                    type empty;
+                }
+                cli:showdeeper;
+                cli:reinit;
+            }
+            list virtual-link {
+                key virtual-link-key;
+                leaf virtual-link-key {
+                    type inet:ipv4-address-no-zone;
+                }
+                leaf hello-interval {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                leaf retransmit-interval {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                leaf transmit-delay {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                leaf dead-interval {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                leaf authentication-key {
+                    type string;
+                }
+                list message-digest-key {
+                    key "message-digest";
+                    leaf message-digest {
+                        type uint8 {
+                            range "1..255";
+                        }
+                    }
+                    leaf md5 {
+                        type string;
+                        mandatory true;
+                    }
+                    cli:showdeeper;
+                }
+                cli:showdeeper;
+            }
+            description '[noexec]';
+        } // closing list area
+        container default-information {
+            container originate {
+                presence true;
+                leaf always {
+                    type empty;
+                }
+                leaf metric {
+                    type uint32 {
+                        range "0..16777214";
+                    }
+                }
+                leaf metric-type {
+                    type enumeration {
+                        enum 1;
+                        enum 2;
+                    }
+                }
+                leaf route-map {
+                    type leafref {
+                        path "/ospf:ospf/ospf:route-map/name";
+                    }
+                }
+                cli:reinit;
+            }
+            cli:showdeeper;
+        } // close container default-information
+        list interface {
+            key name;
+            leaf name {
+                type union {
+                    type string;
+                    type string {
+                        pattern '(br0|br1|br2|br3|br4|br5|br6|br7|eth0|eth1|eth2|eth3|eth4|ppp0|ppp1|pptp)';
+                    }
+                    //type eth:eth-ref;
+                }
+            }
+            leaf description {
+                type string;
+            }
+            container ip {
+                container ospf {
+                    container authentication {
+                        presence true;
+                        leaf digest {
+                            type enumeration {
+                                enum null;
+                                enum message-digest;
+                            }
+                            cli:hidden;
+                            cli:group "1";
+                        }
+                        list ipaddr {
+                            key addr;
+                            leaf addr {
+                                type inet:ipv4-address-no-zone;
+                            }
+                            //cli:hidden;
+                        }
+                 } // close container authentication
+                 list authentication-key {
+                    key name;
+                    leaf name {
+                        type string;
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list authentication-key
+                 list cost {
+                    key number;
+                    leaf number {
+                        type uint32 {
+                            range "1..65536";
+                        }
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list cost
+                 container dead-interval {
+                     list dead-interval-list {
+                        key number;
+                        leaf number {
+                            type uint32 {
+                                range "1..65536";
+                            }
+                        }
+                        leaf addr {
+                            type inet:ipv4-address-no-zone;
+                        }
+                     } // close list dead-interval-list
+                     container minimal {
+                        list hello-multiplier {
+                            key number;
+                            leaf number {
+                                type uint8 {
+                                    range "1..10";
+                                }
+                            }
+                            leaf addr {
+                                type inet:ipv4-address-no-zone;
+                            }
+                        }
+                     }
+                 } // close container dead-interval
+                 list hello-interval {
+                    key number;
+                    leaf number {
+                        type uint32 {
+                            range "1..65536";
+                        }
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list hello-interval
+                 container mtu-ignore {
+                    presence true;
+                    list addr-list {
+                        key addr;
+                        leaf addr {
+                            type inet:ipv4-address-no-zone;
+                        }
+                    }
+                 } // close container mtu-ignore 
+                 leaf network {
+                    type enumeration {
+                        enum broadcast;
+                        enum non-broadcast;
+                        enum point-to-multipoint;
+                        enum point-to-point;
+                    }
+                 }
+                 list priority {
+                    key number;
+                    leaf number {
+                        type uint16 {
+                            range "1..255";
+                        }
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list priority
+                 list retransmit-interval {
+                    key number;
+                    leaf number {
+                        type uint32 {
+                            range "3..65535";
+                        }
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list retransmit-interval
+                 list transmit-delay {
+                    key number;
+                    leaf number {
+                        type uint32 {
+                            range "1..65535";
+                        }
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list transmit
+                 list message-digest-key {
+                    key 'number string';
+                    leaf number {
+                        type uint16 {
+                            range "1..255";
+                        }
+                    }
+                    leaf string {
+                        type string;
+                    }
+                    leaf addr {
+                        type inet:ipv4-address-no-zone;
+                    }
+                 } // close list message-digest-key
+              }// close container ospf
+          }       
+        } // close list interface
+        container ip {
+            uses pfxlst:prefix-list-ipv4-group;
+        } // close container ip
+        container ipv6 {
+            uses pfxlst:prefix-list-ipv6-group;
+        }// close container ipv6
+        list route-map {
+            key 'name policy id';
+            leaf name {
+                type string;
+                cli:hidden;
+            }
+            leaf policy {
+                type cli:acl-deny-permit;
+                cli:hidden;
+            }
+            leaf id {
+                type uint16;
+                cli:hidden;
+            }
+            container match {
+                container ip {
+                    container address {
+                        leaf id {
+                            type union {
+                                type string;
+                                type uint16 {
+                                    range "1..199 | 1300..2699";
+                                }
+                            }
+                            cli:hidden;
+                        }
+                        leaf prefix-list {
+                            type leafref {
+                                path "/ospf:ospf/ospf:ip/ospf:prefix-list/name";
+                            }
+                        }
+                    }
+                    container next-hop {
+                        leaf id {
+                            type union {
+                                type string;
+                                type uint16 {
+                                    range "1..199 | 1300..2699";
+                                }
+                            }
+                            cli:hidden;
+                        }
+                        leaf prefix-list {
+                            type leafref {
+                                path "/ospf:ospf/ospf:ip/ospf:prefix-list/name";
+                            }
+                        }
+                    }
+                } 
+                leaf interface {
+                    type union {
+                        type string;
+                        type string {
+                            pattern '(br0|br1|br2|br3|br4|br5|br6|br7|eth0|eth1|eth2|eth3|eth4|ppp0|ppp1|pptp)';
+                        }
+                        //type eth:eth-ref;
+                    }
+                }
+                leaf tag {
+                    type uint32 {
+                        range "1..65535";
+                    }
+                }          
+            }// close container match
+            container set {
+                leaf metric {
+                    type uint32 {
+                        range "1..2147483647";
+                    }                
+                }
+                leaf metric-type {
+                    type enumeration {
+                        enum type-1;
+                        enum type-2;
+                    }
+                }
+                leaf tag {
+                    type uint32 {
+                        range "1..65535";
+                    }
+                }
+            } // close container set
+            cli:showdeeper;
+        }// close list route-map 
+        list redistribute {
+            key "red";
+            leaf "red" {
+                type enum_redistribute_af;
+                description " Configure OSPF redistribute";
+            }
+            leaf "route-map" {
+                type leafref {
+                    path "/ospf:ospf/ospf:route-map/name";
+                }
+            }
+            leaf "metric" {
+                type uint32 {
+                    range "0..16777214";
+                }
+            }
+           leaf metric-type {
+                type enumeration {
+                    enum type-1;
+                    enum type-2;
+                }
+            }
+            leaf tag {
+                type uint32 {
+                    range "1..65535";
+                }
+            }            
+            description "Configure OSPF redistribute";
+            cli:reinit;
+            cli:showdeeper;
+        } // close list redistribute                
+
+        uses acllst:access-list-group;
+
+       // action restart;
+   } // close container ospf
+
+    augment "/ip:ip" {
+        container ospf {
+            leaf border-routers {
+                type string;
+                config false;
+            }
+
+            leaf database {
+                type union {
+                    type enumeration {
+                        enum asbr-summary;
+                        enum external;
+                        enum network;
+                        enum router;
+                        enum summary;
+                    }
+                }
+            }
+
+            leaf debugging {
+                type string;
+                config false;
+            }
+
+            leaf inteface {
+                type string;
+                config false;
+            }
+
+            leaf neighbor {
+                type union {
+                    type enumeration {
+                        enum all;
+                        enum detail;
+                    }
+                }
+                config false;
+            }
+
+            leaf route {
+                type string;
+                config false;
+            }
+
+            leaf running-config {
+                type string;
+                config false;
+            }
+
+        }
+    }
+} // close module

@@ -111,7 +111,7 @@ public class CienaWaveserverDeviceDescription extends AbstractHandlerBehaviour
          *      ptp-index = 4 * port_number (without decimal) + decimal
          *      e.g
          *          if port_number is 5 then ptp-index = 5 * 4 + 0 = 20
-         *          if port_number is 5.1 then ptp-index = 5 * 4 + 1 = 21
+         *          if port_number is 5.1 then ptp-index = 5 * 4 + 1 = 21put a variable for the ip Address
          *
          * Relationship between channelId and in/out port:
          *      in_port = channelId * 2

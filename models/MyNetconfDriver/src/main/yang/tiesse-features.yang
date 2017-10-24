@@ -1,0 +1,66 @@
+module tiesse-features {
+
+	namespace "urn:ietf:params:xml:ns:yang:tiesse-features";
+	prefix feat;
+
+	organization "tiesse";
+
+	description "System global features";
+
+	revision "2017-03-06" {
+		description "Initial revision.";
+	}
+
+
+	feature model-lx {
+		description "todo";
+	}
+	feature model-fe {
+		description "todo";
+	}
+	feature model-4p {
+		description "todo";
+	}
+	feature model-8p {
+		description "todo";
+	}
+	feature model-isdn {
+		description "todo";
+	}
+	feature model-shdsl {
+		description "todo";
+	}
+	feature model-no-eth1 {
+		description "todo";
+	}
+	feature model-is-0760-44 {
+		description "todo";
+	}
+	feature model-smart-grid {
+		description "todo";
+	}
+	feature model-imolae-cpu {
+		description "todo";
+	}
+	feature model-imolae-switch {
+		description "todo";
+	}
+	feature model-imolae-wan {
+		description "todo";
+	}
+	feature ik-fx {
+		description "todo";
+	}
+	feature ik-2fx {
+		description "todo";
+	}
+	feature ik-poe {
+		description "todo";
+	}
+	feature ik-ike {
+		description "todo";
+	}
+	feature lan-split {
+		description "todo";
+	}
+}

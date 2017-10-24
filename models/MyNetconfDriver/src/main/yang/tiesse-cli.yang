@@ -1,0 +1,227 @@
+module tiesse-cli {
+	namespace "urn:ietf:params:xml:ns:yang:tiesse-cli";
+	prefix "cli";
+
+	description "Types and extensions used by yangcli";
+
+	revision "2017-07-03" {
+		description "Introduced showdeeper extension";
+	}
+
+	revision "2017-06-29" {
+		description "Introduced immediate extension";
+	}
+
+	revision "2017-06-23" {
+		description "Introduced reinit extension";
+	}
+
+	revision "2017-06-01" {
+		description "Introduced hidden extension";
+	}
+
+	revision "2017-05-17" {
+		description "Introduced group extension";
+	}
+
+	revision "2016-09-09" {
+		description "Initial revision.";
+	}
+
+	typedef directive {
+		type string;
+	}
+
+	typedef onoff {
+		type string {
+			pattern "(on|off)";
+		}
+		description "on/off flag";
+	}
+
+	typedef yesno {
+		type string {
+			pattern "(yes|no)";
+		}
+		description "yes/no flag";
+	}
+	typedef routes_type {
+		type string {
+			pattern '(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2])) (([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))';
+		}
+		description "routes type";
+	}
+	typedef percent_type {
+		type uint8 {
+			range "1..100";
+		}
+		description "percent";
+	}
+
+	typedef enum_result {
+		type enumeration {
+			enum failed {
+				description "command failed";
+				value 0;
+			}
+			enum passed {
+				description "command passed";
+				value 1;
+			}
+		}
+	}
+
+	typedef interface-status-type {
+		type enumeration {
+			enum up {
+				description "Interface status is up";
+				value 1;
+			}
+			enum down {
+				description "Interface status is down";
+				value 0;
+			}
+		}
+		description "Interface status [up|down]";
+	}
+
+    typedef acl-deny-permit {
+        type enumeration {
+            enum deny;
+            enum permit;
+        }
+    }
+
+    typedef string-no-space {
+        type string {
+            pattern '\S';
+        }
+    }
+
+    typedef ts-interfaces {
+        type union {
+            type enumeration {
+                enum br0;
+                enum br1;
+                enum br2;
+                enum br3;
+                enum br4;
+                enum br5;
+                enum br6;
+                enum br7;
+                enum eth0;
+                enum eth1;
+                enum eth2;
+                enum eth3;
+                enum eth4;
+                enum ppp0;
+                enum ppp1;
+                enum pptp;
+            }
+            type string;
+        }
+    }
+
+	feature model_lx {}
+
+	feature model_fe {}
+
+	feature model_4p {}
+
+	feature model_8p {}
+
+	feature model_isdn {}
+
+	feature model_shdsl {}
+
+	feature model_no_eth1 {}
+
+	feature model_is_0760_44 {}
+
+	feature model_smart_grid {}
+
+	feature model_imolae_cpu {}
+
+	feature model_imolae_switch {}
+
+	feature model_imolae_wan {}
+
+	feature ik_fx;
+
+	feature ik_2fx;
+
+	feature ik_poe;
+
+	feature ik_ike;
+
+	grouping sr_module {
+		leaf prio {
+			type uint8;
+			default 100;
+		}
+		leaf config_script {
+			type string;
+		}
+		leaf show_script {
+			type string;
+		}
+		leaf notif_script {
+			type string;
+		}
+		leaf rpc_script {
+			type string;
+		}
+		leaf action_script {
+			type string;
+		}
+		leaf debug {
+			type uint8;
+			default 1;
+		}
+		leaf datastore {
+			type string {
+				pattern "(running|candidate)";
+			}
+			default candidate;
+		}
+	}
+
+	extension group {
+		description
+		       "Used to indicate that the node belongs to a group.
+
+			If present, the cli allows to set with one command multiple
+			leaves. 
+			Takes as argument the group ID it belongs to";
+		argument "id";
+	}
+
+	extension hidden {
+		description "Used to indicate that a node should not be shown on the cli.";
+	}
+
+	extension reinit {
+		description "Used to indicate that a list instance should be deleted before setting a value inside";
+	}
+
+	extension immediate {
+		description "Used to indicate that a node should be immediately sent to the callbacks";
+	}
+
+	extension showdeeper {
+		description "Used to indicate that in show config deeper nodes are shown (if present) instead of the node where the extension is used";
+	}
+	
+	extension verify {
+		description "Used to indicate that a node should be verified before applying changes; takes as argument the name of the callback function implemented in the plugin";
+		argument "cb";
+	}
+
+	extension noinstances {
+		description "Callbacks should not retrieve instances of the node where this extension appears and its children. The instance will be truncated to the last parent node without this extension";
+	}
+
+	extension ext-string {
+		description "Valid only in leaf/leaflist which are (derived from) string to indicate that all the remaining text after this node is its value";
+	}
+}

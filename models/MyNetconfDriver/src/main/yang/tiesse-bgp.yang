@@ -1,0 +1,1530 @@
+module tiesse-bgp {
+
+    namespace "urn:ietf:params:xml:ns:yang:tiesse-bgp";
+    prefix "bgp";
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tiesse-cli {
+        prefix cli;
+    }
+
+    import tiesse-ip {
+        prefix ip;
+    }
+
+    import tiesse-prefix-list {
+        prefix pfxlst;
+    }
+
+    import tiesse-access-list {
+        prefix acllst;
+    }
+
+    description "tiesse-bgp module";
+    contact "f.antonini@tiesse.com";
+
+    revision "2017-02-25" {
+        description "Removed augmentation";
+    }
+
+    revision "2016-11-24" {
+        description
+            "Initial revision.";
+    }
+
+    typedef enum_redistribute {
+        type enumeration {
+            enum connected;
+            enum kernel;
+            enum ospf;
+            enum static;
+            enum rip;
+        }
+    }
+
+    typedef enum_redistribute_af {
+        type enumeration {
+            enum connected;
+            enum kernel;
+            enum ospf6;
+            enum static;
+            enum ripng;
+        }
+    }
+
+    typedef enum_capability {
+        type enumeration {
+            enum dynamic;
+            enum route-refresh;
+        }
+    }
+    
+    typedef enum_origin {
+        type enumeration {
+            enum egp;
+            enum igp;
+            enum incomplete;
+        }
+    }
+
+    grouping neighbor-empty {
+        leaf disable-connected-check {
+            type empty;
+        }
+        leaf dont-capability-negotiate {
+            type empty;
+        }
+        leaf ebgp-multihop {
+            type union {
+                type uint8 {
+                    range "1..255";
+                }
+            }
+        }
+        leaf enforce-multihop {
+            type empty;
+        }
+        leaf next-hop-self {
+            type empty;
+        }
+        leaf override-capability {
+            type empty;
+        }
+        leaf passive {
+            type empty;
+        }
+        leaf remove-private-AS {
+            type empty;
+        }
+        leaf route-reflector-client {
+            type empty;
+        }
+        leaf route-server-client {
+            type empty;
+        }
+        leaf send-community {
+            type empty;
+        }
+        leaf shutdown {
+            type empty;
+        }
+    }
+
+    typedef enum_prefix-list {
+        type enumeration {
+            enum both;
+            enum receive;
+            enum send;
+        }
+    }
+
+    typedef enum_in-out {
+        type enumeration {
+            enum in;
+            enum out;
+        }
+    }
+
+    typedef enum_export_import {
+        type enumeration {
+            enum export;
+            enum import;
+        }
+    }
+    
+    typedef number-empty {
+        type union {
+            type string;
+            type uint8 {
+                range "1..10";
+            }
+        }
+    }
+
+    typedef neighbor-ip {
+        type union {
+            type inet:ipv4-address-no-zone;
+            type inet:ipv6-address-no-zone;
+        }
+    }
+
+    typedef neighbor-union {
+        type union {
+            type string;
+            type inet:ipv4-address-no-zone;
+            type inet:ipv6-address-no-zone;
+        }
+    }
+
+    typedef enum-peer-address {
+        type enumeration {
+            enum peer-address;
+        }
+    }
+
+    /* grouping for bgp configs parameters */
+
+    grouping bgp-params {
+        leaf active {
+            type cli:onoff;
+            description "Activate bgp | Deactivate bgp";
+        }
+        leaf-list directive {
+            type cli:directive;
+            description "Add bgp directive";
+            cli:ext-string;
+            cli:verify "chk_directive";
+            // aggiungere inoltre tutti i check eseguiti dentro il comando cmd_set_bgp_direct: si potrebbe pensare di eseguire i check
+            // tramite l'uso di una yang extension per specificare la funzione di prepprocessing in cui copiare il codice della vecchia CLI che faccia i controlli
+            // a questo proposito vedi commento su ticket #30
+        }
+        leaf debug {
+            type empty;
+            description "Start Bgp debug |Stop Bgp debug";
+        }
+        leaf log-neighbor-changes {
+            type empty;
+            description "Configure log-neighbor-changes|Unconfigure log-neighbor-changes";
+        }
+        leaf-list router-id {
+            type inet:ipv4-address-no-zone;
+        }
+        leaf local-as {
+            type uint16;
+            description 'Configure the Local Autonomous System (AS) number|UConfigure the Local Autonomous System (AS) number';
+        }
+        leaf maximum-paths {
+            type "uint32";
+            description "Configure the Maximum Paths number |Unconfigure the Maximum Paths number";
+        }
+        container distance {
+            list "bgp" {
+                key 'dst1 dst2 dst3';
+                leaf dst1 {
+                    type uint8 {
+                        range "1..255";
+                    }
+                    cli:hidden;
+                }
+                leaf dst2 {
+                    type uint8 {
+                        range "1..255";
+                    }
+                    cli:hidden;
+                }
+                leaf dst3 {
+                    type uint8 {
+                        range "1..255";
+                    }
+                    cli:hidden;
+                }
+                description 'bgp distance';
+            }
+        }
+        leaf auto-summary {
+            type empty;
+        }
+        list "aggregate-address" {
+            key 'ipaddr';
+            leaf ipaddr {
+                type inet:ipv4-prefix;
+            }
+            leaf-list aggregation-mode {
+                type enumeration {
+                    enum summary-only;
+                    enum as-set;
+                }
+                cli:hidden;
+            }
+            cli:reinit;
+            description 'Configure BGP aggregate-address';
+        }
+        list "network" {
+            key ipaddr;
+            leaf ipaddr {
+                type inet:ipv4-prefix;
+            }
+            choice netmode {
+                container backdoor {
+                    presence true;
+                    leaf pathlimit {
+                        type uint8;
+                    }
+                    cli:showdeeper;
+                    cli:reinit;
+                }
+                leaf pathlimit {
+                    type uint8;
+                }
+                leaf "route-map" {
+                    type leafref {
+                        path "/bgp:bgp/bgp:route-map/name";
+                    }
+                }
+            }
+            cli:showdeeper;
+            cli:reinit;
+            description 'Configure BGP network';
+        }
+        container address-family {
+            container ipv4 {
+                list "aggregate-address" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type inet:ipv4-prefix;
+                    }
+                    leaf summary-only {
+                        type empty;
+                    }
+                }
+                list "neighbor" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type union {
+                            type inet:ipv4-address-no-zone;
+                            type inet:ipv6-address-no-zone;
+                        }
+                    }
+                    uses address-family-group;
+                    description "[noexec]";
+                }
+                list "network" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type inet:ipv4-prefix;
+                    }
+                    leaf "route-map" {
+                        type leafref {
+                            path "/bgp:bgp/bgp:route-map/name";
+                        }
+                    }
+                    leaf-list pathlimit {
+                        type uint8;
+                    }
+                    description "";
+                }
+            }
+            container ipv6 {
+                list "aggregate-address" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type inet:ipv6-address-no-zone;
+                    }
+                }
+                list "neighbor" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type union {
+                            type inet:ipv4-address-no-zone;
+                            type inet:ipv6-address-no-zone;
+                        }
+                    }
+                    uses address-family-group;
+                    description "[noexec]";
+                }
+                list "network" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type inet:ipv6-address-no-zone;
+                    }
+                    leaf "route-map" {
+                        type leafref {
+                            path "/bgp:bgp/bgp:route-map/name";
+                        }
+                    }
+                    leaf-list pathlimit {
+                        type uint8;
+                    }
+                    description "[noexec]";
+                }
+
+                list redistribute {
+                    key "red";
+                    leaf "red" {
+                        type enum_redistribute_af;
+                        description " Configure BGP redistribute";
+                    }
+                    leaf "route-map" {
+                        type leafref {
+                            path "/bgp:bgp/bgp:route-map/name";
+                        }
+                        cli:group "1";
+                    }
+                    leaf "metric" {
+                        type uint32 {
+                            range "0..2147483647";
+                        }
+                        cli:group "1";
+                    }
+                    description "Configure BGP redistribute";
+                    cli:reinit;
+                    cli:showdeeper;
+                    // fixme: vedi ticket #65, le due foglie devono poter essere asserite in qualunque ordine, la gestione deve essere 'a consumo'
+                }
+            }
+            container vpnv4 {
+                list "neighbor" {
+                    key ipaddr;
+                    leaf ipaddr {
+                        type union {
+                            type inet:ipv4-address-no-zone;
+                            type inet:ipv6-address-no-zone;
+                        }
+                    }
+                    uses address-family-group;
+                    description "[noexec]";
+                }
+                list "network" {
+                    key 'ipaddr rd tag';
+                    leaf ipaddr {
+                        type union {
+                            type inet:ipv4-prefix;
+                        }
+                        cli:hidden;
+                    }
+                    leaf rd {
+                        type union {
+                            type string {
+                                pattern '[0-9\.]*:[0-9]*';
+                            }
+                            type string {
+                                pattern '(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\p{N}\p{L}]+):[0-9]*';
+                            }
+                        }
+                    }
+                    leaf tag {
+                        type uint32;
+                    }
+                    description "";
+                }
+            }
+        }
+    }
+
+    grouping neighbor-commons-grp {
+        uses neighbor-empty;
+        leaf "activate" {
+            type empty;
+            must '../remote-as != ""';
+        }
+        leaf "allowas-in" {
+            type union {
+                type uint8 {
+                    range "1..10";
+                }
+            }
+        }
+        leaf "crypted-password" {
+            type string;
+            must '../remote-as != ""';
+            //fixme: verificare il funzionamanto
+        }
+        leaf-list "description" {
+            type string;
+            must '../remote-as != "" or ../peer-group != ""';
+            cli:reinit;
+        }
+        leaf-list attribute-unchanged {
+            type union {
+                type enumeration {
+                    enum as-path;
+                    enum med;
+                    enum next-hop;
+                }
+            }
+            must '../remote-as != "" or ../peer-group != ""';
+        }
+        container capability {
+            leaf "cap" {
+                type enum_capability;
+                description "";
+                cli:hidden;
+            }
+            container orf {
+                leaf "prefix-list" {
+                    type enum_prefix-list;
+                }
+            }
+            must '../remote-as != "" or ../peer-group != ""';
+        }
+        container distribute-list {
+            list distribute-list-in {
+                key 'name in';
+                leaf name {
+                    type union {
+                        type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                        type uint16 {
+                            range "1..199 | 1300..2699";
+                        }
+                    }
+                    //cli:hidden;
+                    // fixme: appare il name, ma non dovrebbe esserci; non può essere hidden perchè già la lista è hidden, vedi ticket #77
+                }
+                leaf in {
+                    type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                }
+                must '../../remote-as != "" or ../../peer-group != ""';
+                max-elements 1;
+                description "[new]";
+                cli:hidden;
+            }
+            list distribute-list-out {
+                key 'name out';
+                leaf name {
+                    type union {
+                        type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                        type uint16 {
+                            range "1..199 | 1300..2699";
+                        }
+                    }
+                    //cli:hidden;
+                    // fixme: appare il name, ma non dovrebbe esserci; non può essere hidden perchè già la lista è hidden, vedi ticket #77
+                }
+                leaf out {
+                    type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                }
+                must '../../remote-as != "" or ../../peer-group != ""';
+                max-elements 1;
+                description "[new]";
+                cli:hidden;
+            }
+        }
+        container default-originate {
+            presence true;
+            leaf "route-map" {
+                type leafref {
+                    path "/bgp:bgp/bgp:route-map/name";
+                }
+            }
+            cli:showdeeper;
+            cli:reinit;
+            must '../remote-as != "" or ../peer-group != ""';
+        }
+        container fall-over {
+            must '../remote-as != "" or ../peer-group != ""';
+            container "bfd" {
+                presence true;
+                leaf "sync" {
+                    type empty;
+                }
+                cli:showdeeper;
+                cli:reinit;
+            }
+        }
+        container filter-list {
+            list filter-list-in {
+                key 'name in';
+                leaf name {
+                    type string {
+                        pattern "[A-Z,a-z]*";
+                    }
+                    //cli:hidden;
+                    // fixme: appare il name, ma non dovrebbe esserci; non può essere hidden perchè già la lista è hidden, vedi ticket #77
+                }
+                leaf in {
+                    type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                }
+                must '../../remote-as != "" or ../../peer-group != ""';
+                max-elements 1;
+                description "[new]";
+                cli:hidden;
+            }
+            list filter-list-out {
+                key 'name out';
+                leaf name {
+                    type string {
+                        pattern "[A-Z,a-z]*";
+                    }
+                    // fixme: appare il name, ma non dovrebbe esserci; non può essere hidden perchè già la lista è hidden, vedi ticket #77
+                }
+                leaf out {
+                    type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                }
+                must '../../remote-as != "" or ../../peer-group != ""';
+                max-elements 1;
+                description "[new]";
+                cli:hidden;
+            }
+        }
+        list local-as {
+            key number;
+            leaf "number" {
+                type uint32;
+            }
+            leaf-list attributes {
+                type enumeration {
+                    enum no-prepend;
+                    enum replace-as;
+                }
+                cli:hidden;
+                cli:reinit;
+            }
+            max-elements 1;
+            cli:showdeeper;
+            cli:reinit;
+        }
+        list maximum-prefix {
+            key id;
+            leaf "id" {
+                type uint32 {
+                    range "1..2147483647";
+                }
+                description "";
+            }
+            choice attr {
+                leaf warning-only {
+                    type empty;
+                }
+                leaf restart {
+                    type uint16;
+                }
+            }
+            max-elements 1;
+            cli:showdeeper;
+            cli:reinit;
+        }
+        leaf "password" {
+            type string;
+            must '../remote-as != ""';
+        }
+        list route-map {
+            key 'list in-out';
+            leaf "list" {
+                type leafref {
+                    path "/bgp:bgp/bgp:route-map/name";
+                }
+                cli:hidden;
+            }
+            leaf "in-out" {
+                type union {
+                    type enum_in-out;
+                    type enum_export_import;
+                }
+                cli:hidden;
+            }
+        }
+        leaf "unsuppress-map" {
+            type string;
+            must '../remote-as != ""';
+        }
+        leaf remote-as {
+            type uint32 {
+                range "1..4294967294";
+            }
+        }
+        leaf "peer-group" {            
+                type leafref {
+                    path "/bgp:bgp/bgp:neighbor/value";
+                }           
+           //mandatory true;
+        }
+        container prefix-list {
+            list prefix-list-in {
+                key 'name in';
+                leaf name {
+                    type string {
+                        pattern "[A-Z,a-z]*";
+                    }
+                    //cli:hidden;
+                    // fixme: appare il name, ma non dovrebbe esserci; non può essere hidden perchè già la lista è hidden, vedi ticket #77
+                }
+                leaf in {
+			type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                }
+                must '../../remote-as != "" or ../../peer-group != ""';
+                max-elements 1;
+                description "[new]";
+                cli:hidden;
+            }
+            list prefix-list-out {
+                key 'name out';
+                leaf name {
+                    type string {
+                        pattern "[A-Z,a-z]*";
+                    }
+                    //cli:hidden;
+                    // fixme: appare il name, ma non dovrebbe esserci; non può essere hidden perchè già la lista è hidden, vedi ticket #77
+                }
+                leaf out {
+                    type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                }
+                must '../../remote-as != "" or ../../peer-group != ""';
+                max-elements 1;
+                description "[new]";
+                cli:hidden;
+            }
+        }
+        leaf update-source {
+            must '../remote-as != "" or ../peer-group != ""';
+            type union {
+                type string;
+                type inet:ipv4-address-no-zone;
+                type inet:ipv6-address-no-zone;
+            }
+        }
+        leaf weight {
+            must '../remote-as != "" or ../peer-group != ""';
+            type uint16;
+        }
+        container soft-reconfiguration {
+            leaf inbound {
+                type empty;
+            }
+        }
+        container timers {
+            leaf connect {
+                type uint16;
+            }
+            list tm {
+                key 't1 t2';
+                leaf t1 {
+                    type uint16;
+                    cli:hidden;
+                }
+                leaf t2 {
+                    type uint16;
+                    cli:hidden;
+                }
+                //fixme: la lista 'tm' appare nel comando, dovrebbe essere nascosta, vedi ticket #77
+            }
+        }
+        /* operationals node */
+        leaf status {
+            type string;
+            config false;
+        }
+    }
+    grouping neighbor-ip-grp {
+        leaf advertisement-interval {
+            must '../remote-as != ""';
+            type uint16 {
+                range "0..600";
+            }
+        }
+        leaf interface {
+             must '../remote-as != ""';
+            type cli:ts-interfaces;
+            //type id:eth-ifaces;
+            //type eth:eth-ref;
+            //type if:eth-dsl-if-type;
+
+            description "Configure Network interface";
+            // fixme: c'è un ISSUE aperto su sysrepo: quando premo invio dopo aver selezionato l'interfaccia sysrepod crasha, vedi #125
+        }
+        leaf port {
+             must '../remote-as != ""';
+             type uint16;
+        }
+        leaf strict-capability-match {
+             must '../remote-as != ""';
+             type empty;
+        }
+        leaf transparent-as {
+            must '../remote-as != ""';
+            type empty;
+        }
+        leaf transparent-nexthop {
+            must '../remote-as != ""';
+            type empty;
+        }
+        leaf table {
+             type uint8 {
+                range "1..4";
+             }
+        }
+        leaf version {
+            must '../remote-as != ""';
+            type enumeration {
+                enum four {
+		  value 4;
+		}
+                enum minus_four {
+		  value -4;
+		}
+            }
+        }
+    }
+    
+    grouping address-family-group {
+            leaf next-hop-self {
+                type empty;
+            }
+            leaf "activate" {
+                type empty;
+            }
+            leaf "allowas-in" {
+                type union {
+                    type uint8 {
+                        range "1..10";
+                    }
+                }
+            }
+            leaf attribute-unchanged {
+                type empty;
+            }
+            container default-originate {
+                presence true;
+                list "route-map" {
+                    key name;
+                    leaf name {
+                        type leafref {
+                            path "/bgp:bgp/bgp:route-map/name";
+                        }
+                    }
+                }
+            }
+            list distribute-list {
+                key 'list in-out';
+                leaf list {
+                    type union {
+                        type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                        type uint16 {
+                            range "1..199 | 1300..2699";
+                        }
+                    }
+                    cli:hidden;
+                }
+                leaf in-out {
+                    type enum_in-out;
+                    cli:hidden;
+                }
+            }
+            list filter-list {
+                key 'list in-out';
+                leaf "list" {
+                    type string;
+                    cli:hidden;
+                }
+                leaf "in-out" {
+                    type enum_in-out;
+                    cli:hidden;
+                }
+            }
+            leaf maximum-prefix {
+                type uint32 {
+                    range "1..2147483647";
+                }
+            }
+            container nexthop-local {
+                leaf unchanged {
+                    type empty;
+                }
+            }
+            list "peer-group" {
+                key name;
+                leaf name {
+                    type string;
+                }
+            }
+            list prefix-list {
+                key 'list in-out';
+                leaf "list" {
+                    type string;
+                    cli:hidden;
+                }
+                leaf "in-out" {
+                    type enum_in-out;
+                    cli:hidden;
+                }
+            }
+            leaf "remove-private-AS" {
+                type empty;
+            }
+            list route-map {
+                key 'list in-out';
+                leaf "list" {
+                    type string;
+                    cli:hidden;
+                }
+                leaf "in-out" {
+                    type union {
+                        type enum_in-out;
+                        type enum_export_import;
+                    }
+                    cli:hidden;
+                }
+            }
+            leaf "route-reflector-client" {
+                type empty;
+            }
+            leaf "route-server-client" {
+                type empty;
+            }
+            list "send-community" {
+                key name;
+                leaf name {
+                    type union {
+                        type enumeration {
+                            enum both;
+                            enum standard;
+                            enum extended;
+                        }
+                    }
+                }
+            }
+            container soft-reconfiguration {
+                leaf inbound {
+                    type empty;
+                }
+            }
+            list "unsuppress-map" {
+                key name;
+                leaf name {
+                    type string;
+                }
+            }
+    }
+
+    container bgp {
+        list redistribute {
+            cli:noinstances;
+            key "red";
+            leaf "red" {
+                type enum_redistribute;
+                description " Configure BGP redistribute";
+            }
+            leaf "route-map" {
+                type leafref {
+                    path "/bgp:bgp/bgp:route-map/name";
+                }
+                cli:group "1";
+            }
+            leaf "metric" {
+                type uint32 {
+                    range "0..2147483647";
+                }
+                cli:group "1";
+            }
+            description "[noexec] Configure BGP redistribute";
+        }
+        list neighbor {
+            cli:noinstances;
+            key value;
+            leaf value {
+                type union {
+                    type string;
+                    type neighbor-ip;
+                }
+            }
+            uses neighbor-commons-grp;
+            uses neighbor-ip-grp {
+                description "Restrict only to ipv4-no-zone and ipv6-no-zone";
+                when 're-match(value, "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])") or
+        (re-match(value, "((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))") and
+         re-match(value, "(([^:]+:){6}(([^:]+:[^:]+)|(.*\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)"))';
+            }
+            description '[new|noexec]';
+        }
+
+        list route-map {
+            cli:showdeeper;
+            cli:noinstances;
+            key 'name policy id';
+            leaf name {
+                type string;
+                cli:hidden;
+            }
+            leaf policy {
+                type cli:acl-deny-permit;
+                cli:hidden;
+            }
+            leaf id {
+                type uint16;
+                cli:hidden;
+            }
+            container match {
+                leaf as-path {
+                    type leafref {
+                        path "/bgp:bgp/bgp:ip/bgp:as-path/access-list/name";
+                    }
+                }
+                list community {
+                    key "expanded-name cl-number standard-name";
+                    leaf expanded-name {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:community-list/expanded/name";
+                            }
+                        // fixme: sysrepo di disconnette, vedi ticket #125
+                    }
+		    leaf cl-number {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:community-list/cl/number";
+                            }
+                        // fixme: sysrepo di disconnette, vedi ticket #125
+                    }
+		    leaf standard-name {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:community-list/standard/name";
+                            }
+                        // fixme: sysrepo di disconnette, vedi ticket #125
+                    }
+
+                    leaf exact-match {
+                        type empty;
+                    }
+                    max-elements 1;
+                    cli:showdeeper;
+                    cli:reinit;
+                }
+                list extcommunity {
+                    key "expanded-name std-rt-name std-soo-name ext-cl-rt-number ext-cl-soo-number";
+                    leaf expanded-name {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:extcommunity-list/expanded/name";
+                            }
+                    }
+		    leaf std-rt-name {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:extcommunity-list/standard/std-rt/name";
+                            }
+                    }
+		    leaf std-soo-name {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:extcommunity-list/standard/std-soo/name";
+                            }
+                    }
+		    leaf ext-cl-rt-number {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:extcommunity-list/ext-cl-rt/number";
+                            }
+                    }
+		    leaf ext-cl-soo-number {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:extcommunity-list/ext-cl-soo/number";
+                            }
+                    }
+
+                    leaf exact-match {
+                        type empty;
+                    }
+                    max-elements 1;
+                    cli:showdeeper;
+                    cli:reinit;
+                }
+                container ip {
+                    container address {
+                        leaf id {
+                            type union {
+                                type string;
+                                type uint16 {
+                                    range "1..199 | 1300..2699";
+                                }
+                            }
+                            cli:hidden;
+                        }
+                        leaf prefix-list {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:prefix-list/name";
+                            }
+                        }
+                    }
+                    container next-hop {
+                        leaf id {
+                            type union {
+                                type string;
+                                type uint16 {
+                                    range "1..199 | 1300..2699";
+                                }
+                            }
+                            cli:hidden;
+                        }
+                        leaf prefix-list {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:prefix-list/name";
+                            }
+                        }
+                    }
+                    container route-source {
+                        leaf id {
+                            type union {
+                                type string;
+                                type uint16 {
+                                    range "1..199 | 1300..2699";
+                                }
+                            }
+                            cli:hidden;
+                        }
+                        leaf prefix-list {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:prefix-list/name";
+                            }
+                        }
+                    }
+                }
+                container ipv6 {
+                    container address {
+                        leaf id {
+                            type string;
+                            cli:hidden;
+                        }
+                        leaf prefix-list {
+                            type leafref {
+                                path "/bgp:bgp/bgp:ip/bgp:prefix-list/name";
+                            }
+                        }
+                    }
+                    container next-hop {
+                        leaf id {
+                            type inet:ipv6-address-no-zone;
+                        }
+                    }
+                }
+                leaf metric {
+                    type uint32 {
+                        range "1..2147483647";
+                    }
+                }
+                leaf origin {
+                    type enum_origin;
+                }
+                container pathlimit {
+                    leaf as {
+                        type uint16 {
+                            range "1..65535";
+                        }
+                    }
+                }
+                leaf peer {
+                    type union {
+                        type inet:ipv4-address-no-zone;
+                        type inet:ipv6-address-no-zone;
+                        type enumeration {
+                            enum local;
+                        }
+                    }
+                }
+                leaf tag {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                leaf table {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }                  
+            } // close container match
+            
+            container set {
+                leaf-list table {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                container aggregator {
+                    list as {
+                        key 'number ipaddr';
+                        leaf number {
+                            type uint32 {
+                                range "1..2147483647";
+                            }
+                            cli:hidden;
+                        }
+                        leaf ipaddr {
+                            type inet:ipv4-address-no-zone;
+                            cli:hidden;
+                        }
+                        max-elements 1;
+                        cli:showdeeper;
+                    }
+                }
+                container as-path {
+                    leaf-list prepend {
+                        type uint16;
+                    }
+                    leaf-list exclude {
+                        type uint16;
+                    }
+                }
+                leaf atomic-aggregate {
+                    type empty;
+                }
+                list comm-list {
+                    key 'id delete';
+                    leaf id{
+                        type union {
+                            type uint16 {
+                                range "1..500";
+                            }
+                            type string;
+                        }
+                        cli:hidden;
+                    }
+                    leaf delete {
+                       type string {
+                            pattern "[A-Z,a-z]*";
+                        }
+                    }
+                    max-elements 1;
+                    cli:showdeeper;
+                }
+                container ip {
+                    leaf next-hop {
+                        type union {
+                            type inet:ipv4-address-no-zone;
+                            type enum-peer-address;
+                        }
+                    }
+                }
+                container ipv6 {
+                    container next-hop{
+                        leaf global {
+                            type inet:ipv6-address-no-zone;
+                        }
+                        leaf local {
+                            type inet:ipv6-address-no-zone;
+                        }
+                    }
+                }
+                leaf local-preference {
+                    type uint32;
+                }
+                leaf origin {
+                    type enumeration {
+                        enum egp;
+                        enum igp;
+                        enum incomplete;
+                    }
+                }
+                leaf originator-id {
+                    type inet:ipv4-address-no-zone;
+                }
+                container pathlimit {
+                    leaf ttl {
+                        type uint8 {
+                            range "1..255";
+                        }
+                    }
+                }
+                leaf tag {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                container vpnv4 {
+                    leaf next-hop {
+                        type inet:ipv4-address-no-zone;
+                    }
+                }
+                leaf weight {
+                    type uint32;
+                }
+                leaf metric {
+                    type string {
+                        pattern '[+|-]?\s?[0-9]*';
+                    }
+                    // fixme: vedi ticket #77 per gestire i casi "+/- x"
+                }
+                container community {
+                    choice comm-mode {
+                        leaf none {
+                            type empty;
+                        }
+                        leaf-list mode{
+                            type union {
+                                type string {
+                                    pattern '[0-9]*:[0-9]*';
+                                }
+                                type enumeration {
+                                    enum no-export;
+                                    enum local-AS;
+                                    enum no-advertise;
+                                    enum internet;
+                                }
+                            }
+                            max-elements 6;
+                            cli:hidden;
+                            // fixme: verificare la copertura di tutte le permutazioni
+                        }
+                    }
+                }
+                container extcommunity {
+                    container rt {
+                        leaf-list ext {
+                            type string {
+                                pattern '[0-9]*:[0-9]*';
+                            }
+                            max-elements 5;
+                            cli:hidden;
+                        }
+                    }
+                    container soo {
+                        leaf-list exr {
+                            type string {
+                                pattern '[0-9]*:[0-9]*';
+                            }
+                            max-elements 5;
+                            cli:hidden;
+                            cli:reinit;
+                        }
+                    }
+                }
+            } // close container set
+        } // close route-map
+        container ip {
+            cli:noinstances;
+            container as-path {
+                list access-list {
+                    key 'name policy acl';
+                    leaf name {
+                        type string;
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf acl {
+                        type string;
+                        cli:ext-string;
+                        cli:hidden;
+                    }
+                }
+            }
+            container community-list {
+                list cl {
+                    key 'number policy acl';
+                    leaf number {
+                        type uint16 {
+                            range "1..99 | 100..500";
+                        }
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf acl {
+                        type string;
+                        cli:ext-string;
+                        cli:hidden;
+                    }
+                    // fixme: si vede il nome della lista 'cl', vedi ticket #77
+                }
+                list expanded {
+                    key 'name policy acl';
+                    leaf name {
+                        type string;
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf acl {
+                        type string;
+                        cli:ext-string;
+                        cli:hidden;
+                    }
+                }
+                list standard {
+                    key 'name policy acl';
+                    leaf name {
+                        type string;
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf acl {
+                        type string {
+                            pattern '([0-9]*:[0-9]*\s?)+';
+                        }
+                        cli:ext-string;
+                        cli:hidden;
+                    }
+                }
+            }
+            container extcommunity-list {
+                list ext-cl-rt {
+                    key 'number policy rt';
+                    leaf number {
+                        type uint16 {
+                            range "1..99 | 100..500";
+                        }
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf rt {
+                        type string {
+                            pattern '[0-9]*:[0-9]*';
+                        }
+                    }
+                    // fixme: si vede il nome della lista 'ext-cl-rt', vedi ticket #77
+                }
+                list ext-cl-soo {
+                    key 'number policy soo';
+                    leaf number {
+                        type uint16 {
+                            range "1..99 | 100..500";
+                        }
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf soo {
+                        type string {
+                            pattern '[0-9]*:[0-9]*';
+                        }
+                    }
+                    // fixme: si vede il nome della lista 'ext-cl-soo' vedi ticket #77
+                }
+                list expanded {
+                    key 'name policy acl';
+                    leaf name {
+                        type string;
+                        cli:hidden;
+                    }
+                    leaf policy {
+                        type cli:acl-deny-permit;
+                        cli:hidden;
+                    }
+                    leaf acl {
+                        type string {
+                            pattern '[0-9]*:[0-9]*';
+                        }
+                        cli:hidden;
+                    }
+                }
+                container standard {
+                    list std-rt {
+                        key 'name policy rt';
+                        leaf name {
+                            type string;
+                            cli:hidden;
+                        }
+                        leaf policy {
+                            type cli:acl-deny-permit;
+                            cli:hidden;
+                        }
+                        leaf rt {
+                            type string {
+                                pattern '[0-9]*:[0-9]*';
+                            }
+                        }
+                    }
+                    list std-soo {
+                        key 'name policy soo';
+                        leaf name {
+                            type string;
+                            cli:hidden;
+                        }
+                        leaf policy {
+                            type cli:acl-deny-permit;
+                            cli:hidden;
+                        }
+                        leaf soo {
+                            type string {
+                                pattern '[0-9]*:[0-9]*';
+                            }
+                        }
+                    }
+                }
+            }
+            uses pfxlst:prefix-list-ipv4-group;
+        } //close ip
+        container ipv6 {
+            cli:noinstances;
+            uses pfxlst:prefix-list-ipv6-group;
+        }
+        uses acllst:access-list-group;
+        uses bgp-params;
+
+        /* operationals nodes */
+        leaf cidr-only {
+            type string;
+            config false;
+        }
+
+        leaf debugging {
+            type string;
+            config false;
+        }
+        leaf running-config {
+            type string;
+            config false;
+        }
+
+        leaf scan {
+            type string;
+            config false;
+        }
+
+        leaf summary {
+            type string;
+            config false;
+        }
+        description "bgp main container";
+    }
+
+/*
+    augment "/ip:ip" {
+        container bgp {
+            container vpnv4 {
+                container all {
+                    leaf tags {
+                        type string;
+                        config false;
+                    }
+                    leaf summary {
+                        type string;
+                        config false;
+                    }
+                    leaf neighbor {
+                        type leafref {
+                            path "/bgp:bgp/bgp:neighbor/value";
+                        }
+                        config false;
+                    }
+                    leaf ipaddr {
+                        cli:hidden;
+                        type union {
+                            type inet:ipv4-address-no-zone;
+                            type inet:ipv4-prefix;
+                        }
+                        config false;
+                    }
+                }
+                leaf rd {
+                    type union {
+                        type string {
+                            pattern '[0-9]*:[0-9]* | ';
+                        }
+                        type string {
+                            pattern "[A-Z,a-z]*:[0-9]*";
+                        }
+                    }
+                    config false;
+                }
+            }
+        }
+    }
+*/
+}
