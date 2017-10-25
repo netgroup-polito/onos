@@ -1,0 +1,209 @@
+module tiesse-ethernet {
+
+    namespace "urn:ietf:params:xml:ns:yang:tiesse-ethernet";
+    prefix "eth";
+
+    import tiesse-cli {
+        prefix cli;
+    }
+
+    import tiesse-ip {
+        prefix ip;
+    }
+
+    import tiesse-arp {
+        prefix arp;
+    }
+
+    description "tiesse-ethernet module";
+    contact "f.antonini@tiesse.com";
+
+    revision "2017-05-23" {
+        description
+            "Augmentation to interfaces";
+    }
+
+    revision "2017-02-25" {
+        description "Removed augmentation";
+    }
+
+    revision "2016-11-24" {
+        description
+            "Initial revision.";
+    }
+
+    /* rpcs for ethernet */
+
+    rpc save {
+        output {
+            leaf result {
+                type cli:enum_result;
+            }
+        }
+    }
+
+    rpc reload {
+        output {
+            leaf result {
+                type cli:enum_result;
+            }
+        }
+    }
+
+    /* grouping for ethernet configs parameters */
+typedef eth_speed_type {
+    type enumeration {
+        enum 1000BaseT-FD;
+        enum 1000BaseT-HD;
+        enum 100BaseTx-FD;
+        enum 100BaseTx-HD;
+        enum 10BaseT;
+        enum 10BaseT-FD;
+        enum 10BaseT-HD;
+        enum auto;
+    }
+}
+
+    grouping eth-params {
+        uses ip:ip-params;
+        uses arp:arp-params;
+        leaf description {
+            type string {
+                length "1..20";
+            }
+            //description "[immediate] Interface description |Remove interface description";
+            //cli:immediate;
+            description "Interface description |Remove interface description";
+        }
+        leaf lldp {
+            type cli:onoff;
+            description "Enable LLDP protocol |Disable LLDP protocol";
+        }
+        leaf speed {
+            type eth_speed_type;
+            default "auto";
+            description "Configure interface speed rate - only for eth0 port|Unconfigure interface speed rate";
+        }
+        leaf masquerade {
+            type empty;
+            description "Enable masquerading |Disable masquerading";
+        }
+        leaf shut {
+            type empty;
+            description "Interface shutdown flag |Enable interface";
+        }
+        leaf dhcp-client {
+            type empty;
+            description "Enable Dhcp Client flag|Disable Dhcp client";
+            cli:immediate;
+        }
+        leaf dhcp6-client {
+            type empty;
+            description "Enable Dhcp6 client flag|Disable Dhcp6 client";
+        }
+
+        container "dot1x" {
+            leaf enable {
+                type string {
+                    pattern "(single-mac|whole-port)";
+                }
+                description "Configure DOT1X Authentication";
+            }
+            leaf active {
+                type cli:onoff;
+                description "DOT1X enable/disable flag";
+            }
+            leaf supplicant {
+                type empty;
+                description "Configure WPA Supplicant flag";
+            }
+            description "DOT1X protocol";
+        }
+        container "access-vlan" {
+            leaf vid {
+                type "uint32"{
+                    range "0..4095";
+                }
+                description "vlan id";
+            }
+            description "Configure native vlan id VID";
+        }
+        leaf active {
+            type cli:onoff;
+            description "interface enable/disable flag";
+        }
+    }
+
+    grouping eth-params-state {
+        leaf status {
+            type string;
+            config false;
+        }
+        leaf statistics {
+            type string;
+            config false;
+        }
+        leaf config {
+            type string;
+            config false;
+        }
+    }
+
+    grouping eth-group {
+        uses eth-params;
+        uses eth-params-state;
+    }
+
+    container eth0 {
+        uses eth-group;
+    }
+
+    container eth1 {
+        uses eth-group;
+    }
+
+    container eth2 {
+        when "../lan-splitting='on'";
+        uses eth-group;
+    }
+
+    container eth3 {
+        when "../lan-splitting='on'";
+        uses eth-group;
+    }
+
+    container eth4 {
+        when "../lan-splitting='on'";
+        uses eth-group;
+    }
+
+    container eth5 {
+        when "../lan-splitting='on'";
+        uses eth-group;
+    }
+
+    leaf lan-splitting {
+        type cli:onoff;
+        default "on";
+    }
+
+/*
+    container bplane {
+        if-feature features:model-4p;
+        leaf speed {
+            type string;
+        }
+    }
+    container bplane8 {
+        if-feature features:model-8p;
+        leaf speed {
+            type string;
+        }
+    }
+*/
+
+    container package {
+        uses cli:sr_module;
+        description "[noexec] package factory info";
+    }
+}

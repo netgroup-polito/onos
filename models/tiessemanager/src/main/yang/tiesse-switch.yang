@@ -1,0 +1,154 @@
+module tiesse-switch {
+
+	namespace "urn:ietf:params:xml:ns:yang:tiesse-switch";
+	prefix "tiesse-switch";
+
+	import tiesse-cli {
+		prefix cli;
+	}
+
+	import tiesse-features {
+		prefix features;
+	}
+
+	description "tiesse-switch module";
+	contact "l.oliva@tiesse.com";
+
+	revision "2017-05-22" {
+		description
+			"Initial revision.";
+	}
+
+	/* rpcs for switch */
+
+	rpc save {
+		output {
+			leaf result {
+				type cli:enum_result;
+			}
+		}
+	}
+
+	rpc reload {
+		output {
+			leaf result {
+				type cli:enum_result;
+			}
+		}
+	}
+
+	grouping switch-port-set {
+		container allow {
+			leaf-list vid {
+				type uint32 {
+					range 0..4095;
+				}
+			}
+		}
+		leaf mode {
+			type enumeration {
+				enum access;
+				enum hybrid;
+				enum trunk;
+			}
+		}
+		leaf crossover {
+			type enumeration {
+				enum auto;
+				enum disabled;
+				enum enabled;
+			}
+		}
+		leaf description {
+			type string;
+		}
+		container native {
+			leaf vid {
+				type uint32 {
+					range 0..4095;
+				}
+			}	
+		}
+		leaf shut {
+			type cli:yesno;
+		}
+		leaf speed {
+			type enumeration {
+				enum 1000BaseT-FD;
+				enum 1000BaseT-HD;
+				enum 100BaseTx-FD;
+				enum 100BaseTx-HD;
+				enum 10BaseT;
+				enum 10BaseT-FD;
+				enum 10BaseT-HD;
+				enum auto;
+			}
+		}
+		leaf vid {
+			type uint32 {
+				range 0..4095;
+			}
+		}
+	}
+
+	grouping switch-port-show {
+		leaf counters {
+			type string;
+			config false;
+		}
+		leaf diagnostics {
+			type string;
+			config false;
+		}
+		leaf vlan {
+			type string;
+			config false;
+		}
+	}
+
+	grouping switch-show {
+		leaf status {
+			type string;
+			config false;
+		}
+		leaf vlan {
+			type string;
+			config false;
+		}
+	}
+
+	container switch {
+		leaf active {
+			type cli:onoff;
+			description "[hidden]";
+		}
+		list port {
+			max-elements 4;
+			key "name";
+			leaf name {
+				type string;
+				description "[hidden] Port Number";
+			}
+
+			uses switch-port-set;
+			uses switch-port-show;
+			description "[new]";
+		}
+		uses switch-show;
+	}
+
+	list notifications {
+		key "name";
+		leaf name {
+			type string;
+		}
+		leaf eventhandler {
+			type string;
+		}
+	}
+
+	container package {
+		uses cli:sr_module;
+		description "[noexec] package factory info";
+	}
+}

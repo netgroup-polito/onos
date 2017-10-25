@@ -38,6 +38,8 @@ import org.onosproject.yang.gen.v1.tiesseip.rev20170521.tiesseip.Netmask;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.DefaultYangAutoPrefixSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.YangAutoPrefixSwitch;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.switchportset.Allow;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.switchportset.DefaultAllow;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.switchportset.ModeEnum;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.yangautoprefixswitch.DefaultPort;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlanOpParam;
@@ -61,7 +63,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Configures interfaces on Cisco IOS devices.
  */
 public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
-        implements InterfaceConfig {
+        implements InterfaceConfigExtended {
 
     private final Logger log = getLogger(getClass());
 
@@ -86,6 +88,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         /*
 
         Es di comandi per configurare la porta in access mode:
+
         set switch port 1 mode access
         set switch port 1 vid 10
         set switch on
@@ -96,13 +99,12 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
          */
 
-
-
         //Configuration of switch port, vid and access mode
         TiesseSwitchOpParam tiesseSwitch = new TiesseSwitchOpParam();
 
         Port tiessePort = new DefaultPort();
-        tiessePort.name("1");
+        //tiessePort.name("1");
+        tiessePort.name(intf); //set port name
         tiessePort.mode(ModeEnum.ACCESS); //set port mode to Access mode
 
         String vlanIdString = vlanId.toString(); //parse from short to string
@@ -113,36 +115,6 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         yangAutoPrefixSwitch.active(Onoff.fromString("on")); // set switch on
 
         tiesseSwitch.yangAutoPrefixSwitch(yangAutoPrefixSwitch);
-
-        //Configuration of interface with VLAN
-        /*
-        TiesseVlanOpParam tiesseVlan = new TiesseVlanOpParam();
-        Vlan vlan = new DefaultVlan();
-        Vlans vlans = new DefaultVlans();
-
-        tiesseVlan.vlan(vlan); //add
-
-        //String vlanIdString = vlanId.toString(); //parse from short to string
-        //Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
-        vlans.vid(vidLong); // set vlan id
-        vlans.protocol("802.1q");
-        TsInterfacesUnionEnum1 tsInterfacesUnionEnum1 = TsInterfacesUnionEnum1.of(intf); //es: intf = ETH0 or intf = ETH1
-        TsInterfacesUnion tsInterfacesUnion = new TsInterfacesUnion(tsInterfacesUnionEnum1);
-        TsInterfaces tsInterface = new TsInterfaces(tsInterfacesUnion);
-        vlans.yangAutoPrefixInterface(tsInterface); //set interface intf
-
-
-
-        Ipv4Address ipAddr = Ipv4Address.fromString("192.168.100.1"); //TODO: set ip address and netmask of the subinterface somewhere
-        Netmask netmask = Netmask.fromString("255.255.255.0");
-
-        vlans.ipaddr(ipAddr);
-        vlans.netmask(netmask);
-
-
-        tiesseVlan.vlan().addToVlans(vlans); //add this vlan to the list of vlans
-        */
-
 
         boolean reply;
         try {
@@ -158,6 +130,162 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         return reply;
     }
 
+
+    /**
+     *  Adds a trunk interface for VLANs.
+     *
+     * @param intf the name of the interface
+     * @param vlanIds the VLAN IDs
+     * @return the result of operation
+     */
+    @Override
+    public boolean addTrunkMode(String intf, List<VlanId> vlanIds) {
+        /*
+        Es di comandi per configurare la porta in access mode:
+
+        set switch port 1 mode trunk
+        set switch port 1 allow vid 2
+        set switch port 1 allow vid 3
+        set switch port 1 allow vid 4
+        set switch on
+
+        set vlan add vid 2 interface eth1
+        set vlan add vid 3 interface eth1
+        set vlan add vid 4 interface eth1
+
+        set vlan eth1.2 ipaddr 192.168.2.1 netmask 255.255.255.0
+        set vlan eth1.3 ipaddr 192.168.3.1 netmask 255.255.255.0
+        set vlan eth1.4 ipaddr 192.168.4.1 netmask 255.255.255.0
+
+
+        */
+
+        NetconfController controller = checkNotNull(handler()
+                .get(NetconfController.class));
+
+        NetconfSession session = controller.getDevicesMap().get(handler()
+                .data().deviceId()).getSession();
+
+        InterfaceConfigTiesseNetconfService interfaceConfigTiesseNetconfService =
+                (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
+
+
+        //Configuration of switch port, vid and trunk mode
+        TiesseSwitchOpParam tiesseSwitch = new TiesseSwitchOpParam();
+
+        Port tiessePort = new DefaultPort();
+
+
+        //tiessePort.name("1");
+        tiessePort.name(intf); //set port name
+        tiessePort.mode(ModeEnum.TRUNK); //set port mode to Trunk mode
+
+
+        Allow allow = new DefaultAllow();
+        for(VlanId vlanId: vlanIds) {
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            allow.addToVid(vidLong); //add list of vid to allow in the trunk mode port
+        }
+        tiessePort.allow(allow); //set list of vid to allow
+
+        YangAutoPrefixSwitch yangAutoPrefixSwitch = new DefaultYangAutoPrefixSwitch();
+        yangAutoPrefixSwitch.addToPort(tiessePort); //add port to switch
+        yangAutoPrefixSwitch.active(Onoff.fromString("on")); // set switch on
+
+        tiesseSwitch.yangAutoPrefixSwitch(yangAutoPrefixSwitch);
+
+        boolean reply;
+        try {
+            //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
+            reply = interfaceConfigTiesseNetconfService.setTiesseSwitch(tiesseSwitch, session, DatastoreId.RUNNING);
+            //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
+        } catch (NetconfException e) {
+            log.error("Failed to configure VLAN ID list for trunk mode on device {} interface {}.",
+                    handler().data().deviceId(), intf, e);
+            return false;
+        }
+
+        return reply;
+    }
+
+
+    /**
+     * Adds IP address and netmask to a VLAN sub-interface.
+     *
+     * @param intf the name of the interface
+     * @param vlanId the VLAN ID
+     * @param ipAddress the ip Address to assign
+     * @param netmask the netmask to assign
+     * @return the result of operation
+     */
+
+
+    @Override
+    public boolean addIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask) {
+
+        NetconfController controller = checkNotNull(handler()
+                .get(NetconfController.class));
+
+        NetconfSession session = controller.getDevicesMap().get(handler()
+                .data().deviceId()).getSession();
+
+        InterfaceConfigTiesseNetconfService interfaceConfigTiesseNetconfService =
+                (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
+
+        /*
+
+        Es di comandi per configurare la vlan e associare ip e netmask alla sottinterfaccia:
+
+        set vlan add vid 10 interface eth1
+
+        set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
+        */
+
+        //Configuration of interface with VLAN
+
+        TiesseVlanOpParam tiesseVlan = new TiesseVlanOpParam();
+        Vlan vlan = new DefaultVlan();
+        Vlans vlans = new DefaultVlans();
+
+        tiesseVlan.vlan(vlan); //add
+
+        String vlanIdString = vlanId.toString(); //parse from short to string
+        Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+        vlans.vid(vidLong); // set vlan id
+        vlans.protocol("802.1q");
+        TsInterfacesUnionEnum1 tsInterfacesUnionEnum1 = TsInterfacesUnionEnum1.of(intf); //es: intf = ETH0 or intf = ETH1
+        TsInterfacesUnion tsInterfacesUnion = new TsInterfacesUnion(tsInterfacesUnionEnum1);
+        TsInterfaces tsInterface = new TsInterfaces(tsInterfacesUnion);
+        vlans.yangAutoPrefixInterface(tsInterface); //set interface intf
+
+
+        //Ipv4Address ipAddr = Ipv4Address.fromString("192.168.100.1");
+        //Netmask netmask = Netmask.fromString("255.255.255.0");
+        Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
+        Netmask netmaskVar = Netmask.fromString(netmask);
+
+
+        vlans.ipaddr(ipAddr);
+        vlans.netmask(netmaskVar);
+
+
+        tiesseVlan.vlan().addToVlans(vlans); //add this vlan to the list of vlans
+
+
+        boolean reply;
+        try {
+            //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
+            reply = interfaceConfigTiesseNetconfService.setTiesseVlan(tiesseVlan, session, DatastoreId.RUNNING);
+            //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
+        } catch (NetconfException e) {
+            log.error("Failed to configure VLAN ID {} on device {} interface {}.",
+                    vlanId, handler().data().deviceId(), intf, e);
+            return false;
+        }
+
+        return reply;
+    }
 
     //TODO: Implement all the methods under this todo for the Tiesse
 
@@ -221,33 +349,6 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         rpc.append(getClosingString());
 
         return rpc.toString();
-    }
-
-    /**
-     *  Adds a trunk interface for VLANs.
-     *
-     * @param intf the name of the interface
-     * @param vlanIds the VLAN IDs
-     * @return the result of operation
-     */
-    @Override
-    public boolean addTrunkMode(String intf, List<VlanId> vlanIds) {
-        NetconfController controller = checkNotNull(handler()
-                                       .get(NetconfController.class));
-
-        NetconfSession session = controller.getDevicesMap().get(handler()
-                                 .data().deviceId()).getSession();
-        String reply;
-        try {
-            reply = session.requestSync(addTrunkModeBuilder(intf, vlanIds));
-        } catch (NetconfException e) {
-            log.error("Failed to configure trunk mode for VLAN ID {} on device {} interface {}.",
-                      vlanIds, handler().data().deviceId(), intf, e);
-            return false;
-        }
-
-        return XmlConfigParser.configSuccess(XmlConfigParser.loadXml(
-                new ByteArrayInputStream(reply.getBytes(StandardCharsets.UTF_8))));
     }
 
     /**
@@ -532,6 +633,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
     public boolean removePatchMode(String ifaceName) {
         throw new UnsupportedOperationException("Remove patch interface is not supported");
     }
+
 
 }
 
