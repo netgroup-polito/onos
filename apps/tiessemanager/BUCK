@@ -1,12 +1,14 @@
 COMPILE_DEPS = [
     '//lib:CORE_DEPS',
     '//lib:ONOS_YANG',
+    '//lib:JACKSON',
 #    '//drivers/utilities:onos-drivers-utilities',
     '//protocols/netconf/api:onos-protocols-netconf-api',
     '//protocols/netconf/ctl:onos-protocols-netconf-ctl',
     '//models/tiessemanager:onos-models-tiessemanager',
     '//lib:org.apache.karaf.shell.console',
     '//incubator/api:onos-incubator-api',
+    '//drivers/MyNetconfDriver:onos-drivers-MyNetconfDriver'
 ] + YANG_TOOLS
 
 TEST_DEPS = [
