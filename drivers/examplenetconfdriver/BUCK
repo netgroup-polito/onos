@@ -24,7 +24,7 @@ APPS = [
     'org.onosproject.netconf',
     'org.onosproject.netconfsb',
     'org.onosproject.drivers.netconf',
-    'org.onosproject.models.mynetconfdriver'
+    'org.onosproject.models.examplenetconfdriver'
 ]
 
 osgi_jar_with_tests (

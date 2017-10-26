@@ -75,7 +75,7 @@ import org.slf4j.Logger;
 public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour implements FlowRuleProgrammable {
 
     protected final Logger log = getLogger(getClass());
-    public static final String MYNETCONFDRIVER_DRIVERS = "com.examplenetconfdriver.drivers";
+    public static final String EXAMPLENETCONFDRIVER_DRIVERS = "com.examplenetconfdriver.drivers";
     public static final int PRIORITY_DEFAULT = 50000;
     //To protect the NETCONF session from concurrent access across flow addition and removal
     //static Semaphore sessionMutex = new Semaphore(1);
@@ -99,7 +99,7 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
         }
         NetconfSession session = ncDevice.getSession();
         CoreService coreService = checkNotNull(handler().get(CoreService.class));
-        ApplicationId appId = coreService.getAppId(MYNETCONFDRIVER_DRIVERS);
+        ApplicationId appId = coreService.getAppId(EXAMPLENETCONFDRIVER_DRIVERS);
         OpenconfigBgpNetconfService openconfigBgpNetconfService =
                 (OpenconfigBgpNetconfService) checkNotNull(handler().get(OpenconfigBgpNetconfService.class));
 

@@ -8,7 +8,7 @@ COMPILE_DEPS = [
     '//models/tiessemanager:onos-models-tiessemanager',
     '//lib:org.apache.karaf.shell.console',
     '//incubator/api:onos-incubator-api',
-    '//drivers/MyNetconfDriver:onos-drivers-MyNetconfDriver'
+    '//drivers/examplenetconfdriver:onos-drivers-examplenetconfdriver'
 ] + YANG_TOOLS
 
 TEST_DEPS = [

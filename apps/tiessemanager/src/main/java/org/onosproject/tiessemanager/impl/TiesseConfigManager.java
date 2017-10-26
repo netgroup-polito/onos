@@ -22,7 +22,7 @@ import org.onlab.packet.VlanId;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 
-import org.onosproject.drivers.MyNetconfDriver.InterfaceConfigExtended;
+import org.onosproject.drivers.examplenetconfdriver.InterfaceConfigExtended;
 import org.onosproject.net.Device;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.behaviour.InterfaceConfig;

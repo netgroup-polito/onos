@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.onosproject.drivers.MyNetconfDriver.yang;
+package org.onosproject.drivers.examplenetconfdriver.yang;
 
 import org.onosproject.netconf.DatastoreId;
 import org.onosproject.netconf.NetconfException;
@@ -50,7 +50,7 @@ public interface InterfaceConfigTiesseNetconfService {
      */
 
     boolean setTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session,
-                             DatastoreId targetDs) throws NetconfException;
+                          DatastoreId targetDs) throws NetconfException;
 
     /**
      * Deletes the value to attribute tiesseVlan.
@@ -62,7 +62,7 @@ public interface InterfaceConfigTiesseNetconfService {
      * @throws NetconfException if the session has any error
      */
     boolean deleteTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session,
-                                DatastoreId targetDs) throws NetconfException;
+                             DatastoreId targetDs) throws NetconfException;
 
 
 }

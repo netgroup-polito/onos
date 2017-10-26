@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.onosproject.drivers.MyNetconfDriver.yang.impl;
+package org.onosproject.drivers.examplenetconfdriver.yang.impl;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -28,7 +28,7 @@ import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.model.*;
 import org.onosproject.yang.runtime.*;
 
-import org.onosproject.drivers.MyNetconfDriver.yang.InterfaceConfigTiesseNetconfService;
+import org.onosproject.drivers.examplenetconfdriver.yang.InterfaceConfigTiesseNetconfService;
 import org.onosproject.netconf.DatastoreId;
 import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
@@ -46,8 +46,8 @@ import java.util.List;
 @Component(immediate = true, inherit = true)
 @Service
 public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implements InterfaceConfigTiesseNetconfService{
-    public static final String INTERFACE_CONFIG_TIESSE = "org.onosproject.drivers.MyNetconfDriver.yang.InterfaceConfigTiesse";
-    public static final String INTERFACE_CONFIG_TIESSE_NS = "http://www.mynetconfdriver.com/InterfaceConfigTiesse";
+    public static final String INTERFACE_CONFIG_TIESSE = "org.onosproject.drivers.examplenetconfdriver.yang.InterfaceConfigTiesse";
+    public static final String INTERFACE_CONFIG_TIESSE_NS = "http://www.examplenetconfdriver.com/InterfaceConfigTiesse";
 
     @Activate
     public void activate() {

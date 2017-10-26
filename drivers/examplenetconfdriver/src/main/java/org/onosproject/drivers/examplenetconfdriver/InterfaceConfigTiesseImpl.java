@@ -15,10 +15,10 @@
  *
  */
 
-package org.onosproject.drivers.MyNetconfDriver;
+package org.onosproject.drivers.examplenetconfdriver;
 
 import org.onlab.packet.VlanId;
-import org.onosproject.drivers.MyNetconfDriver.yang.InterfaceConfigTiesseNetconfService;
+import org.onosproject.drivers.examplenetconfdriver.yang.InterfaceConfigTiesseNetconfService;
 import org.onosproject.drivers.utilities.XmlConfigParser;
 import org.onosproject.net.behaviour.InterfaceConfig;
 import org.onosproject.net.behaviour.PatchDescription;
