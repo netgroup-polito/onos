@@ -141,7 +141,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
     @Override
     public boolean addTrunkMode(String intf, List<VlanId> vlanIds) {
         /*
-        Es di comandi per configurare la porta in access mode:
+        Es di comandi per configurare la porta in trunk mode:
 
         set switch port 1 mode trunk
         set switch port 1 allow vid 2

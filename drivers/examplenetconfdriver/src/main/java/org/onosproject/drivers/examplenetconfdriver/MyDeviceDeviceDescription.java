@@ -126,7 +126,7 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
             log.warn("Longitude and latitude could not be retrieved from device " + deviceId);
         }
 
-        return new DefaultDeviceDescription(device.id().uri(), Device.Type.OTHER, "Manufacturer", "MyDevice", swVersion,
+        return new DefaultDeviceDescription(device.id().uri(), Device.Type.OTHER, "Tiesse", "MyDevice", swVersion,
                 serialNumber, new ChassisId(), annotationsBuilder.build());
     }
 
