@@ -1,4 +1,0 @@
-yang_model(
-    app_name = 'org.onosproject.models.MyTestDriver',
-    title = 'My Test Driver YANG Model',
-)
