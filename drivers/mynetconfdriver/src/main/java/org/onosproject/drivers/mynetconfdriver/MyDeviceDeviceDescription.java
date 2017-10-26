@@ -133,7 +133,7 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
     /*
     *
     * Example of PortDetails. It defines 2 ports: 1 Fiber port 0 and 1 copper port 1.
-    * It also can be defined throuh a netconf get with the device specific rpc to get the ports
+    * It also can be defined through a netconf get with the device specific rpc to get the ports
     *
     */
 
