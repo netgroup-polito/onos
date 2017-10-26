@@ -1,0 +1,4 @@
+yang_model(
+    app_name = 'org.onosproject.models.examplenetconfdriver',
+    title = 'examplenetconfdriver YANG Model',
+)
