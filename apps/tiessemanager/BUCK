@@ -36,7 +36,7 @@ osgi_jar_with_tests (
 )
 
 onos_app (
-    app_name = 'org.onosproject.drivers.tiessemanager',
+    app_name = 'org.onosproject.apps.tiessemanager',
     title = 'tiessemanager app',
     category = 'Traffic Steering',
     url = 'http://onosproject.org',
