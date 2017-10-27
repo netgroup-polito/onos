@@ -1,6 +1,8 @@
 package org.onosproject.tiessemanager.impl.config;
 
-import java.util.List;
+/**
+ * Trunk mode data representation for vlans.
+ */
 
 public class TrunkData {
 

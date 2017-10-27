@@ -128,6 +128,11 @@ public class TiesseConfigManager implements TiesseConfigService {
 
     }
 
+    /**
+     * Sets the Tiesse device with the received configuration.
+     * In particular it sets the Tiesse device's ports in access/trunk mode
+     * and assigns them an ip address and a netmask.
+     */
     private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap) { //TODO: add ip address and netmask configuration for the vlan
         Iterable<Device> devices = deviceService.getAvailableDevices();
         for (Device device : devices) {
@@ -149,7 +154,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                             }
                     }
                     if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
-                        if(!trunkModePortVlanMap.isEmpty()) {
+                        if(!trunkModePortVlanMap.isEmpty()) { //if the port-vlanlist map is not empty
                             for (Map.Entry<String, List<VlanId>> portVlanEntry : trunkModePortVlanMap.entrySet()) //for every port-vlanlist map element
                             {
                                 String port = portVlanEntry.getKey();
@@ -171,14 +176,16 @@ public class TiesseConfigManager implements TiesseConfigService {
                             interfaceConfig.addIpAddrAndNetmaskToInterface(port,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
 
                         }
-
                     }
-
                 }
             }
         }
     }
 
+
+    /**
+     * Creates a map with port as key and list of vlans for that port as value for trunk mode.
+     */
     public Map<String, List<VlanId>> TrunkModePortVlanMapCreator(List<TrunkData> trunkModeDataList){
         Map<String, List<VlanId>> portVlansMap = new HashMap<>(); //map with port, vlan id list for that port
 
@@ -210,7 +217,6 @@ public class TiesseConfigManager implements TiesseConfigService {
                     }
                 }
             }
-
         }
         return portVlansMap;
     }

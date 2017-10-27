@@ -35,11 +35,8 @@ public class TiesseConfig extends Config<ApplicationId> {
     private static final String PORT = "port";
     private static final String VLAN = "vlan";
     private static final String MODE = "mode";
-    private static final String VLAN_LIST = "vlanlist";
     private static final String IP_ADDRESS = "ipaddress";
     private static final String NETMASK = "netmask";
-    private static final String IP_ADDRESS_LIST = "ipaddresslist";
-    private static final String NETMASK_LIST = "netmasklist";
 
     /**
      * Gets port,vlan,ip address and netmask for access mode from configuration.

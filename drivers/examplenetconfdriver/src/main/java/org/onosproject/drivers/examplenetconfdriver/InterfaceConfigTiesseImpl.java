@@ -90,6 +90,10 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set switch port 1 vid 10
         set switch on
 
+        <---This method implements just the commands on top of this comment--->
+
+        <---The commands below are implemented in addIpAddrAndNetmaskToInterface() method--->
+
         set vlan add vid 10 interface eth1
 
         set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
@@ -145,6 +149,10 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set switch port 1 allow vid 3
         set switch port 1 allow vid 4
         set switch on
+
+        <---This method implements just the commands on top of this comment--->
+
+        <---The commands below are implemented in addIpAddrAndNetmaskToInterface() method--->
 
         set vlan add vid 2 interface eth1
         set vlan add vid 3 interface eth1
@@ -237,6 +245,8 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set vlan add vid 10 interface eth1
 
         set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
+
+        <---This method implements the commands on top of this comment--->
         */
 
         //Configuration of interface with VLAN

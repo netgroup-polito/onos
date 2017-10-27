@@ -1,5 +1,10 @@
 package org.onosproject.tiessemanager.impl.config;
 
+
+/**
+ * Access mode data representation for vlans.
+ */
+
 public class AccessData {
 
     private String port;
