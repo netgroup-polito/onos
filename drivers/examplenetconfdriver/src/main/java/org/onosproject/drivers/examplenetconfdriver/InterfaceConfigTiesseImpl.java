@@ -57,7 +57,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * Configures interfaces on Cisco IOS devices.
+ * Configures interfaces on Tiesse devices.
  */
 public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         implements InterfaceConfigTiesse {
@@ -83,8 +83,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
                 (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
 
         /*
-
-        Es di comandi per configurare la porta in access mode:
+        Example of commands to configure the port in access mode:
 
         set switch port 1 mode access
         set switch port 1 vid 10
@@ -142,7 +141,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
     @Override
     public boolean addTrunkMode(String intf, List<VlanId> vlanIds) {
         /*
-        Es di comandi per configurare la porta in trunk mode:
+        Example of commands to configure the port in trunk mode:
 
         set switch port 1 mode trunk
         set switch port 1 allow vid 2
@@ -239,8 +238,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
                 (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
 
         /*
-
-        Es di comandi per configurare la vlan e associare ip e netmask alla sottinterfaccia:
+        Example of commands to configure vlan and associate ip address and netmask to the sub-interface:
 
         set vlan add vid 10 interface eth1
 

@@ -3,6 +3,10 @@ package org.onosproject.drivers.examplenetconfdriver;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.behaviour.InterfaceConfig;
 
+/**
+ * Interface that extends InterfaceConfig for interfaces' configuration on Tiesse devices.
+ */
+
 public interface InterfaceConfigTiesse extends InterfaceConfig{
 
 

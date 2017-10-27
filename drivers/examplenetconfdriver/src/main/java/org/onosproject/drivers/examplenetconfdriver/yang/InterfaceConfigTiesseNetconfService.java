@@ -24,6 +24,10 @@ import org.onosproject.yang.gen.v1.openconfigbgp.rev20170730.OpenconfigBgp;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlanOpParam;
 
+/**
+ * Interface to include Netconf sessions to configure Tiesse devices.
+ */
+
 public interface InterfaceConfigTiesseNetconfService {
 
     /**
