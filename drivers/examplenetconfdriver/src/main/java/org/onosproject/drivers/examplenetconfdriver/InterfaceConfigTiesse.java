@@ -3,7 +3,7 @@ package org.onosproject.drivers.examplenetconfdriver;
 import org.onlab.packet.VlanId;
 import org.onosproject.net.behaviour.InterfaceConfig;
 
-public interface InterfaceConfigExtended extends InterfaceConfig{
+public interface InterfaceConfigTiesse extends InterfaceConfig{
 
 
     /**

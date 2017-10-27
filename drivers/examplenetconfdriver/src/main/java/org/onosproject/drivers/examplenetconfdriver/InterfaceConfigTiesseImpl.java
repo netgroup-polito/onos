@@ -20,7 +20,6 @@ package org.onosproject.drivers.examplenetconfdriver;
 import org.onlab.packet.VlanId;
 import org.onosproject.drivers.examplenetconfdriver.yang.InterfaceConfigTiesseNetconfService;
 import org.onosproject.drivers.utilities.XmlConfigParser;
-import org.onosproject.net.behaviour.InterfaceConfig;
 import org.onosproject.net.behaviour.PatchDescription;
 import org.onosproject.net.behaviour.TunnelDescription;
 import org.onosproject.net.device.DeviceInterfaceDescription;
@@ -48,8 +47,6 @@ import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.tiessevlan.Vlan;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.tiessevlan.vlan.DefaultVlans;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.tiessevlan.vlan.Vlans;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.yangautoprefixswitch.Port;
-import org.onosproject.yang.model.DefaultModelObjectData;
-import org.onosproject.yang.model.ModelObjectData;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -63,7 +60,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Configures interfaces on Cisco IOS devices.
  */
 public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
-        implements InterfaceConfigExtended {
+        implements InterfaceConfigTiesse {
 
     private final Logger log = getLogger(getClass());
 

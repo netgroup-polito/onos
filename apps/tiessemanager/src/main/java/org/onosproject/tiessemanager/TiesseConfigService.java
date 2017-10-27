@@ -17,6 +17,9 @@
 package org.onosproject.tiessemanager;
 
 
+import org.onosproject.tiessemanager.impl.config.AccessData;
+import org.onosproject.tiessemanager.impl.config.TrunkData;
+
 import java.util.List;
 import java.util.Map;
 
@@ -29,19 +32,19 @@ import java.util.Map;
 public interface TiesseConfigService {
 
     /**
-     * Returns the map between the port and vlan ID with Access Mode.
+     * Returns the AccessData object list containing port,vlan id, ip address and netmask for Access Mode.
      *
-     * @return a map between the port and vlan ID
+     * @return AccessData object
      */
 
-    Map<String, String> portVlanAccessModeMap();
+    List<AccessData> accessModeData();
 
     /**
-     * Returns the map between the port and vlan ID with Trunk Mode.
+     * Returns the TrunkData object list containing port and a list of:vlan id, ip address and netmask for Trunk Mode.
      *
-     * @return a map between the port and vlan ID
+     * @return TrunkData object
      */
 
-    Map<String, List<String>> portVlanTrunkModeMap();
+    List<TrunkData> trunkModeData();
 }
 

@@ -5,11 +5,18 @@ import java.util.List;
 public class TrunkData {
 
     private String port;
-    private List<TrunkParams> trunkParamsList;
+    private String vlan;
+    private String ipaddress;
+    private String netmask;
 
-    public TrunkData(String port, List<TrunkParams> trunkParamsList) {
+    public TrunkData() {
+    }
+
+    public TrunkData(String port, String vlan, String ipaddress, String netmask) {
         this.port = port;
-        this.trunkParamsList = trunkParamsList;
+        this.vlan = vlan;
+        this.ipaddress = ipaddress;
+        this.netmask = netmask;
     }
 
     public String getPort() {
@@ -20,11 +27,31 @@ public class TrunkData {
         this.port = port;
     }
 
-    public List<TrunkParams> getTrunkParamsList() {
-        return trunkParamsList;
+    public String getVlan() {
+        return vlan;
     }
 
-    public void setTrunkParamsList(List<TrunkParams> trunkParamsList) {
-        this.trunkParamsList = trunkParamsList;
+    public void setVlan(String vlan) {
+        this.vlan = vlan;
+    }
+
+    public String getIpaddress() {
+        return ipaddress;
+    }
+
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
+    }
+
+    public String getNetmask() {
+        return netmask;
+    }
+
+    public void setNetmask(String netmask) {
+        this.netmask = netmask;
+    }
+
+    public boolean isEmpty() {
+        return port == null && vlan == null && ipaddress == null && netmask == null;
     }
 }

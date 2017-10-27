@@ -42,12 +42,12 @@ public class TiesseConfig extends Config<ApplicationId> {
     private static final String NETMASK_LIST = "netmasklist";
 
     /**
-     * Gets port-vlan map with access mode from configuration.
-     * @return port-vlan map
+     * Gets port,vlan,ip address and netmask for access mode from configuration.
+     * @return AccessData object
      */
 
-    public Map<String, String> getPortVlanAccessModeMap() {
-        Map<String, String> map = new HashMap<>(); // map<Port, Vlan>
+    public List<AccessData> getAccessModeData() {
+        List<AccessData> accessDataList = new ArrayList<>();
 
         JsonNode vlans = object.path(VLANS);
         //for each element of the vlans list
@@ -55,24 +55,28 @@ public class TiesseConfig extends Config<ApplicationId> {
 
             String mode = vlansElem.path(MODE).asText();
             if (mode.equals("ACCESS")) {
+
                 String port = vlansElem.path(PORT).asText();
                 String vlan = vlansElem.path(VLAN).asText();
+                String ipaddress = vlansElem.path(IP_ADDRESS).asText();
+                String netmask = vlansElem.path(NETMASK).asText();
 
-                map.put(port, vlan);
+                AccessData accessData = new AccessData(port, vlan, ipaddress, netmask);
+                accessDataList.add(accessData);
             }
         });
 
-        return map;
+        return accessDataList;
     }
 
     /**
-     * Gets port-vlan map with trunk mode from configuration.
-     * @return port-vlan map
+     * Gets port,vlan,ip address and netmask for trunk mode from configuration.
+     * @return TrunkData object
      */
 
-    public Map<String, List<String>> getPortVlanTrunkModeMap() {
-        Map<String, List<String>> map = new HashMap<>(); // map<Port, list<Vlan>>
-        List<String> vlanListForPort = new ArrayList<>();
+    public List<TrunkData> getTrunkModeData() {
+        List<TrunkData> trunkDataList = new ArrayList<>();
+
 
         JsonNode vlans = object.path(VLANS);
         //for each element of the vlans node
@@ -81,18 +85,16 @@ public class TiesseConfig extends Config<ApplicationId> {
             String mode = vlansElem.path(MODE).asText();
             if (mode.equals("TRUNK")) {
                 String port = vlansElem.path(PORT).asText();
+                String vlan = vlansElem.path(VLAN).asText();
+                String ipaddress = vlansElem.path(IP_ADDRESS).asText();
+                String netmask = vlansElem.path(NETMASK).asText();
 
-                JsonNode vlanlist = object.path(VLAN_LIST);
-                //for each element of the vlan list of the trunk mode
-                vlanlist.forEach(vlanElem -> {
-                    vlanListForPort.add(vlanElem.asText());
-                });
-
-                map.put(port, vlanListForPort);
+                TrunkData trunkData = new TrunkData(port, vlan, ipaddress, netmask);
+                trunkDataList.add(trunkData);
             }
         });
 
-        return map;
+        return trunkDataList;
     }
 }
 

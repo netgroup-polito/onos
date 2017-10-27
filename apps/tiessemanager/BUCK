@@ -5,7 +5,7 @@ COMPILE_DEPS = [
 #    '//drivers/utilities:onos-drivers-utilities',
     '//protocols/netconf/api:onos-protocols-netconf-api',
     '//protocols/netconf/ctl:onos-protocols-netconf-ctl',
-    '//models/tiessemanager:onos-models-tiessemanager',
+    #    '//models/tiessemanager:onos-models-tiessemanager',
     '//lib:org.apache.karaf.shell.console',
     '//incubator/api:onos-incubator-api',
     '//drivers/examplenetconfdriver:onos-drivers-examplenetconfdriver'
@@ -25,7 +25,7 @@ APPS = [
     'org.onosproject.netconf',
     'org.onosproject.netconfsb',
     'org.onosproject.drivers.netconf',
-    'org.onosproject.models.tiessemanager'
+#    'org.onosproject.models.tiessemanager'
 ]
 
 osgi_jar_with_tests (

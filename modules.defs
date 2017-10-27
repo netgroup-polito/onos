@@ -239,8 +239,7 @@ MODELS = [
     '//models/openroadm:onos-models-openroadm-oar',
     '//models/l3vpn:onos-models-l3vpn-oar',
     '//models/microsemi:onos-models-microsemi-oar',
-    '//models/examplenetconfdriver:onos-models-examplenetconfdriver-oar',
-    '//models/tiessemanager:onos-models-tiessemanager-oar'
+    '//models/examplenetconfdriver:onos-models-examplenetconfdriver-oar'
 ]
 
 APP_JARS = [

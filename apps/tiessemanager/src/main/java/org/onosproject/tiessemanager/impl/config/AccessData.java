@@ -7,6 +7,10 @@ public class AccessData {
     private String ipaddress;
     private String netmask;
 
+
+    public AccessData() {
+    }
+
     public AccessData(String port, String vlan, String ipaddress, String netmask) {
 
         this.port = port;
@@ -14,6 +18,7 @@ public class AccessData {
         this.ipaddress = ipaddress;
         this.netmask = netmask;
     }
+
 
     public void setPort(String port) {
         this.port = port;
@@ -46,6 +51,10 @@ public class AccessData {
 
     public String getNetmask() {
         return netmask;
+    }
+
+    public boolean isEmpty() {
+        return port == null && vlan == null && ipaddress == null && netmask == null;
     }
 
 }

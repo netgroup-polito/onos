@@ -28,8 +28,8 @@
 		<behaviour api="org.onosproject.net.behaviour.MeterQuery"
 			impl="org.onosproject.drivers.examplenetconfdriver.FullMetersAvailable" />
         <!--		<behaviour api="org.onosproject.net.behaviour.InterfaceConfig"
-                           impl="org.onosproject.drivers.cisco.InterfaceConfigTiesseImpl"/>  -->
-        <behaviour api="org.onosproject.drivers.examplenetconfdriver.InterfaceConfigExtended"
+                           impl="org.onosproject.drivers.examplenetconfdriver.InterfaceConfigTiesseImpl"/>  -->
+        <behaviour api="org.onosproject.drivers.examplenetconfdriver.InterfaceConfigTiesse"
                    impl="org.onosproject.drivers.examplenetconfdriver.InterfaceConfigTiesseImpl"/>
             </driver>
         </drivers>
