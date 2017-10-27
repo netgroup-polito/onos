@@ -53,7 +53,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Service
 public class TiesseConfigManager implements TiesseConfigService {
 
-    private static final String APP_NAME = "org.onosproject.app.tiessemanager";
+    private static final String APP_NAME = "org.onosproject.tiessemanager";
 
     private final Logger log = getLogger(getClass());
     private ApplicationId appId;
@@ -118,12 +118,16 @@ public class TiesseConfigManager implements TiesseConfigService {
 
 
     private void readConfig() {
-        log.debug("Config received");
+        log.info("Config received. Method readConfig() called.");
         TiesseConfig config = configRegistry.getConfig(appId, TiesseConfig.class);
+        log.info("Config received. Method readConfig() called. Got configuration from configRegistry.");
         accessModeDataList = config.getAccessModeData();
+        log.info("Config received. Method readConfig() called. Got access mode data list from JSON.");
         trunkModeDataList = config.getTrunkModeData();
+        log.info("Config received. Method readConfig() called. Got trunk mode data list from JSON.");
 
         trunkModePortVlanMap = TrunkModePortVlanMapCreator(trunkModeDataList);
+        log.info("Config received. Method readConfig() called. Created port vlan map for trunk mode data list.");
         ConfigTiesseDevice(trunkModePortVlanMap);
 
     }
@@ -134,7 +138,9 @@ public class TiesseConfigManager implements TiesseConfigService {
      * and assigns them an ip address and a netmask.
      */
     private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap) { //TODO: add ip address and netmask configuration for the vlan
+        log.info("Method ConfigTiesseDevice() called.");
         Iterable<Device> devices = deviceService.getAvailableDevices();
+        log.info("Method ConfigTiesseDevice() called. Got available devices.");
         for (Device device : devices) {
             if (device.manufacturer().equals("Tiesse")) { //if manufacturer is equal to Tiesse
                 if (device.is(InterfaceConfigTiesse.class)){ // if the interfaceConfig behavior is supported by the device.
@@ -187,6 +193,7 @@ public class TiesseConfigManager implements TiesseConfigService {
      * Creates a map with port as key and list of vlans for that port as value for trunk mode.
      */
     public Map<String, List<VlanId>> TrunkModePortVlanMapCreator(List<TrunkData> trunkModeDataList){
+        log.info("Method TrunkModePortVlanMapCreator() called.");
         Map<String, List<VlanId>> portVlansMap = new HashMap<>(); //map with port, vlan id list for that port
 
         if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
