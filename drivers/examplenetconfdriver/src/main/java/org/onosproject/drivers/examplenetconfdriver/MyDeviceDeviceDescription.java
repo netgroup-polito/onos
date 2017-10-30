@@ -23,9 +23,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.onlab.packet.ChassisId;
 import org.onosproject.drivers.examplenetconfdriver.yang.IetfSystemNetconfService;
+import org.onosproject.drivers.examplenetconfdriver.yang.InterfaceConfigTiesseNetconfService;
+import org.onosproject.drivers.examplenetconfdriver.yang.impl.InterfaceConfigTiesseManager;
 import org.onosproject.net.AnnotationKeys;
 import org.onosproject.net.DefaultAnnotations;
 import org.onosproject.net.Device;
@@ -50,6 +53,8 @@ import org.onosproject.yang.gen.v1.ietfsystemmicrosemi.rev20160505.ietfsystemmic
 import org.onosproject.yang.gen.v1.ietfsystem.rev20140806.IetfSystem;
 import org.onosproject.yang.gen.v1.ietfsystemmicrosemi.rev20160505.ietfsystemmicrosemi.systemstate.platform.DefaultAugmentedSysPlatform;
 import org.onosproject.yang.gen.v1.ietfyangtypes.rev20130715.ietfyangtypes.DateAndTime;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.slf4j.Logger;
 
 /**
@@ -141,17 +146,85 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
     public List<PortDescription> discoverPortDetails() { //TODO: implement port discovery based on the specific device
 
         List<PortDescription> ports = new ArrayList<PortDescription>();
+        /*
+        //Example of static ports assignment (taken from microsemi)
+       */
 
-        DefaultAnnotations annotationOptics = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Optics")
-                .build();
-        PortDescription optics = new DefaultPortDescription(PortNumber.portNumber(0), true, Port.Type.FIBER, 1000,
-                annotationOptics);
-        ports.add(optics);
+        DefaultAnnotations annotationPort1 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Port 1").build();
+        PortDescription port1 = new DefaultPortDescription(PortNumber.portNumber(1), true, Port.Type.COPPER, 1000,
+                annotationPort1);
+        ports.add(port1);
 
-        DefaultAnnotations annotationHost = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Host").build();
-        PortDescription host = new DefaultPortDescription(PortNumber.portNumber(1), true, Port.Type.COPPER, 1000,
-                annotationHost);
-        ports.add(host);
+        DefaultAnnotations annotationPort2 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Port 2").build();
+        PortDescription port2 = new DefaultPortDescription(PortNumber.portNumber(2), true, Port.Type.COPPER, 1000,
+                annotationPort2);
+        ports.add(port2);
+
+        DefaultAnnotations annotationPort3 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Port 3").build();
+        PortDescription port3 = new DefaultPortDescription(PortNumber.portNumber(3), true, Port.Type.COPPER, 1000,
+                annotationPort3);
+        ports.add(port3);
+
+        DefaultAnnotations annotationPort4 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Port 4").build();
+        PortDescription port4 = new DefaultPortDescription(PortNumber.portNumber(4), true, Port.Type.COPPER, 1000,
+                annotationPort4);
+        ports.add(port4);
+
+
+        /*
+        //Example of ports assignment with the info obtained through netconf request to the device
+       */
+
+        /*
+        NetconfController controller = checkNotNull(handler().get(NetconfController.class));
+        NetconfDevice ncDevice = controller.getDevicesMap().get(handler().data().deviceId());
+        if (ncDevice == null) {
+            log.error("Internal ONOS Error. Device has been marked as reachable, " +
+                            "but deviceID {} is not in Devices Map. Continuing with empty description",
+                    handler().data().deviceId());
+            return ports;
+        }
+        NetconfSession session = ncDevice.getSession();
+
+        InterfaceConfigTiesseNetconfService interfaceConfigTiesseNetconfService =
+                (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
+
+        TiesseSwitchOpParam op = new TiesseSwitchOpParam();
+
+        try {
+            TiesseSwitch tiesseSwitchCurrent =
+                    interfaceConfigTiesseNetconfService.getTiesseSwitch(op, session);
+            if (tiesseSwitchCurrent != null) {
+
+                List<org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.yangautoprefixswitch.Port> tiessePorts = tiesseSwitchCurrent.yangAutoPrefixSwitch().port();
+                for (org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.yangautoprefixswitch.Port tiessePort: tiessePorts)
+                {
+                    String tiessePortName = tiessePort.name();
+                    PortNumber portNumber = PortNumber.portNumber(1); //portNumber initialized to 1 but will be changed if different
+                    DefaultAnnotations annotationPort = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, tiessePortName).build();
+                    if (tiessePortName.equals("Port 1")) { portNumber = PortNumber.portNumber(1);
+                    } else if (tiessePortName.equals("Port 2")) {portNumber = PortNumber.portNumber(2);
+                    } else if (tiessePortName.equals("Port 3")) {portNumber = PortNumber.portNumber(3);
+                    } else if (tiessePortName.equals("Port 4")) {portNumber = PortNumber.portNumber(4);
+                    }
+                        PortDescription port = new DefaultPortDescription(portNumber, true, Port.Type.COPPER, 1000,
+                                annotationPort);
+                        ports.add(port);
+                    }
+                }
+
+            }
+        catch (NetconfException e) {
+            if (e.getCause() instanceof TimeoutException) {
+                log.warn("Timeout exception getting TiesseSwitch ports from {}",
+                        handler().data().deviceId());
+                return ports;
+            } else {
+                log.error("Unexpected error on TiesseSwitch discoverPortDetails() on {}",
+                        handler().data().deviceId(), e);
+            }
+        }
+        */
 
         return ports;
     }

@@ -21,6 +21,7 @@ import org.onosproject.netconf.NetconfSession;
 
 import org.onosproject.yang.gen.v1.openconfigbgp.rev20170730.OpenconfigBgpOpParam;
 import org.onosproject.yang.gen.v1.openconfigbgp.rev20170730.OpenconfigBgp;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlanOpParam;
 
@@ -67,6 +68,18 @@ public interface InterfaceConfigTiesseNetconfService {
      */
     boolean deleteTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session,
                              DatastoreId targetDs) throws NetconfException;
+
+    /**
+     * Returns the filtered model.
+     *
+     * @param tiesseSwitch value of tiesseSwitch to use as filter
+     * @param session An active NETCONF session
+     * @return TiesseSwitch
+     * @throws NetconfException if the session has any error
+     */
+
+    TiesseSwitch getTiesseSwitch(TiesseSwitchOpParam tiesseSwitch, NetconfSession session)
+            throws NetconfException;
 
 
 }

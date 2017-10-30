@@ -24,7 +24,9 @@ import org.apache.felix.scr.annotations.Service;
 import org.onosproject.netconf.DatastoreId;
 import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
+import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.DefaultYangAutoPrefixSwitch;
 import org.onosproject.yang.model.*;
 import org.onosproject.yang.runtime.*;
 
@@ -96,5 +98,32 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
     @Override
     public boolean deleteTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session, DatastoreId targetDs) throws NetconfException {
         return false;
+    }
+
+    /**
+     * Get a filtered subset of the model.
+     * This is meant to filter the current live model
+     * against the attribute(s) given in the argument
+     * and return the filtered model.
+     * @throws NetconfException if the session has any error
+     */
+    @Override
+    public TiesseSwitch getTiesseSwitch(TiesseSwitchOpParam tiesseSwitch, NetconfSession session)
+            throws NetconfException {
+
+        ModelObjectData moQuery = DefaultModelObjectData.builder()
+                .addModelObject((ModelObject) tiesseSwitch.yangAutoPrefixSwitch())
+                .build();
+
+        ModelObjectData moReply = getNetconfObject(moQuery, session);
+
+        TiesseSwitchOpParam tiesseSwitchOpParam = new TiesseSwitchOpParam();
+        for (ModelObject mo:moReply.modelObjects()) {
+            if (mo instanceof DefaultYangAutoPrefixSwitch) {
+                tiesseSwitchOpParam.yangAutoPrefixSwitch((DefaultYangAutoPrefixSwitch) mo);
+            }
+        }
+
+        return tiesseSwitchOpParam;
     }
 }
