@@ -65,8 +65,8 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
 
     private String serialNumber = "unavailable";
     private String swVersion = "unavailable";
-    private String longitudeStr = null;
-    private String latitudeStr = null;
+    //private String longitudeStr = null;
+    //private String latitudeStr = null;
     private final Logger log = getLogger(getClass());
 
     public MyDeviceDeviceDescription() {
@@ -92,12 +92,16 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
         try {
             IetfSystem system = ietfSystemService.getIetfSystemInit(session);
             if (system != null && system.systemState() != null) {
+
                 swVersion = system.systemState().platform().osRelease();
+                /*
                 //example of augmentation of models
                 AugmentedSysPlatform augmentedSysPlatform = //example taken from microsemi device
                         (AugmentedSysPlatform) system.systemState()
                         .platform().augmentation(DefaultAugmentedSysPlatform.class);
                 serialNumber = augmentedSysPlatform.deviceIdentification().serialNumber();//example taken from microsemi device
+                */
+                serialNumber = "5262-IKF";
                 DateAndTime deviceDateAndTime = system.systemState().clock().currentDatetime();
                 OffsetDateTime odt =
                         OffsetDateTime.parse(deviceDateAndTime.string(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
@@ -107,13 +111,13 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
                     ietfSystemService.setCurrentDatetime(nowUtc, session);
                 }
             }
-
+            /*
             if (system != null && system.system() != null) {
                 AugmentedSysSystem augmentedSystem = //example taken from microsemi device
                         (AugmentedSysSystem) system.system().augmentation(DefaultAugmentedSysSystem.class);
                 longitudeStr = augmentedSystem.longitude().toPlainString(); //example taken from microsemi device
                 latitudeStr = augmentedSystem.latitude().toPlainString(); //example taken from microsemi device
-            }
+            }*/
         } catch (NetconfException e) {
             log.error("Unable to retrieve init data from device: " + handler().data().deviceId().toString()
                     + " Error: " + e.getMessage());
@@ -124,14 +128,15 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
         DeviceId deviceId = handler().data().deviceId();
         Device device = deviceService.getDevice(deviceId);
         DefaultAnnotations.Builder annotationsBuilder = DefaultAnnotations.builder();
+        /*
         if (longitudeStr != null && latitudeStr != null) {
             annotationsBuilder.set(AnnotationKeys.LONGITUDE, longitudeStr)
                     .set(AnnotationKeys.LATITUDE, latitudeStr).build();
         } else {
             log.warn("Longitude and latitude could not be retrieved from device " + deviceId);
-        }
+        }*/
 
-        return new DefaultDeviceDescription(device.id().uri(), Device.Type.OTHER, "Tiesse", "MyDevice", swVersion,
+        return new DefaultDeviceDescription(device.id().uri(), Device.Type.OTHER, "Tiesse", "Imola", swVersion,
                 serialNumber, new ChassisId(), annotationsBuilder.build());
     }
 
