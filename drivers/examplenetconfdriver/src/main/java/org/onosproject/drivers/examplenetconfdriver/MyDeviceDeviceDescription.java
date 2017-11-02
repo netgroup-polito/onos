@@ -175,6 +175,11 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
                 annotationPort4);
         ports.add(port4);
 
+        DefaultAnnotations annotationPort5 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Port 5").build();
+        PortDescription port5 = new DefaultPortDescription(PortNumber.portNumber(5), true, Port.Type.COPPER, 1000,
+                annotationPort5);
+        ports.add(port5);
+
 
         /*
         //Example of ports assignment with the info obtained through netconf request to the device
