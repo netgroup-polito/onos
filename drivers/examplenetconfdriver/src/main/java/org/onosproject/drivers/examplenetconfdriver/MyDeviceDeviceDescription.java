@@ -63,8 +63,8 @@ import org.slf4j.Logger;
 
 public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implements DeviceDescriptionDiscovery {
 
-    private String serialNumber = "unavailable";
-    private String swVersion = "unavailable";
+    private String serialNumber = "16IIMFE25";
+    private String swVersion = " 5.5.0-2-R";
     //private String longitudeStr = null;
     //private String latitudeStr = null;
     private final Logger log = getLogger(getClass());
@@ -86,7 +86,7 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
             return null;
         }
         NetconfSession session = ncDevice.getSession();
-        IetfSystemNetconfService ietfSystemService =
+        /*IetfSystemNetconfService ietfSystemService =
                 (IetfSystemNetconfService) checkNotNull(handler().get(IetfSystemNetconfService.class));
 
         try {
@@ -100,7 +100,7 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
                         (AugmentedSysPlatform) system.systemState()
                         .platform().augmentation(DefaultAugmentedSysPlatform.class);
                 serialNumber = augmentedSysPlatform.deviceIdentification().serialNumber();//example taken from microsemi device
-                */
+                *//*
                 serialNumber = "5262-IKF";
                 DateAndTime deviceDateAndTime = system.systemState().clock().currentDatetime();
                 OffsetDateTime odt =
@@ -117,12 +117,12 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
                         (AugmentedSysSystem) system.system().augmentation(DefaultAugmentedSysSystem.class);
                 longitudeStr = augmentedSystem.longitude().toPlainString(); //example taken from microsemi device
                 latitudeStr = augmentedSystem.latitude().toPlainString(); //example taken from microsemi device
-            }*/
+            }*//*
         } catch (NetconfException e) {
             log.error("Unable to retrieve init data from device: " + handler().data().deviceId().toString()
                     + " Error: " + e.getMessage());
             e.printStackTrace();
-        }
+        }*/
 
         DeviceService deviceService = checkNotNull(handler().get(DeviceService.class));
         DeviceId deviceId = handler().data().deviceId();

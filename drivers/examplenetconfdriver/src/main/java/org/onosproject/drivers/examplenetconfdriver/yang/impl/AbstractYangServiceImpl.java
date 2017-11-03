@@ -195,6 +195,7 @@ public abstract class AbstractYangServiceImpl {
         }
 
         String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
+        log.info("xmlQueryStr -->: {}", xmlQueryStr);
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStr);
 
@@ -205,8 +206,9 @@ public abstract class AbstractYangServiceImpl {
                                             List<AnnotatedNodeInfo> annotations)
             throws NetconfException {
         //Convert the param to XML to use as a filter
+        log.info("Inside encodeMoToXmlStr");
         ResourceData rd = ((ModelConverter) yangModelRegistry).createDataNode(yangObjectOpParamFilter);
-
+        log.info("Inside encodeMoToXmlStr. Created data node.");
         DefaultCompositeData.Builder cdBuilder =
                         DefaultCompositeData.builder().resourceData(rd);
         if (annotations != null) {
@@ -216,6 +218,7 @@ public abstract class AbstractYangServiceImpl {
         }
         CompositeStream cs = xSer.encode(cdBuilder.build(), yCtx);
         //Convert the param to XML to use as a filter
+        log.info("Inside encodeMoToXmlStr. Encoded to xml");
 
         try {
             ByteSource byteSource = new ByteSource() {

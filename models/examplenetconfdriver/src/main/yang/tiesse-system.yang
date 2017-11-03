@@ -1,0 +1,492 @@
+module tiesse-system {
+
+	namespace "urn:ietf:params:xml:ns:yang:tiesse-system";
+	prefix "tiesse-system";
+
+	import tiesse-cli {
+		prefix cli;
+	}
+
+	organization "tiesse";
+
+	description
+		"This module is the main YANG module for the system.";
+
+	revision "2017-02-25" { description "Removed augmentation"; }
+	revision "2017-02-02" { description "Added config section"; }
+	revision "2017-01-31" { description "Added RO operationals."; }
+	revision "2017-01-27" { description "Added RPC section."; }
+	revision "2017-01-18" { description "Initial revision."; }
+
+	container log {
+		leaf active {
+			type cli:onoff;
+			description "Start log up| Shut log down";
+			default "off";
+		}
+		leaf facility {
+			type string {
+				pattern "(local0|local1|local2|local3|local4|local5|local6|local7)";
+			}
+			description "Configure syslog facility";
+		}
+		leaf level {
+			type uint8 {
+				range "1..5";
+			}
+			default 4;
+			description "Configure local log level";
+		}
+		container local {
+			presence local;
+			leaf level {
+				type uint8 {
+					range "1..5";
+				}
+				description "Configure local log level";
+			}
+			description "Local syslog level | Disable local syslog";
+		}
+		leaf max-lines {
+			type uint16 {
+				range "100..10000";
+			}
+			default 4096;
+			description "Configure local syslog maximum lines";
+		}
+		leaf priority {
+			type enumeration {
+				enum err {
+					value 1;
+				}
+				enum warn {
+					value 2;
+				}
+				enum notice {
+					value 3;
+				}
+				enum info {
+					value 4;
+				}
+				enum debug {
+					value 5;
+				}
+			}
+			description "Configure remote log priority";
+		}
+		// remote
+
+		description "Configure syslog | Unconfigure syslog";
+	}
+	
+	container timezone {
+		leaf active {
+			type cli:onoff;
+			description "[hidden] Start timezone up| Shut timezone down";
+		}
+		leaf tz {
+		    type enumeration {
+			enum CET;
+			enum EET;
+			enum GMT;
+			enum GMTp1;
+			enum GMTm1;
+			enum GMTm2;
+			enum GMTm3;
+			enum MET;
+			enum MSK;
+			enum UTC;
+			enum WET;
+		    }
+		    description "Select timezone";
+		}
+		description "Configure timezone";
+	}
+
+	container system {
+		description "[noexec] System configuration nodes container";
+
+		leaf-list packages {
+			type string;
+			description "[noexec] packages list";
+		}
+
+		list checkpoint {
+			key "name";
+			leaf "name" {
+				type "string";
+				description "checkpoint name";
+			}
+			description "[noexec] checkpoints list";
+		}
+
+		leaf system {
+			type string;
+			config false;
+			description "System general informations";
+		}
+		leaf version {
+			type string;
+			config false;
+			description "System version informations";
+		}
+		leaf build {
+			type string;
+			config false;
+			description "System build informations";
+		}
+		leaf serial {
+			type string;
+			config false;
+			description "Router serial number";
+		}
+		leaf model {
+			type string;
+			config false;
+			description "Router model";
+		}
+		leaf uptime {
+			type string;
+			config false;
+			description "Router uptime";
+		}
+		leaf meminfo {
+			type string;
+			config false;
+			description "System memory informations";
+		}
+		leaf cpu-usage {
+			type string;
+			config false;
+			description "System CPU usage informations";
+		}
+		leaf proc-status {
+			type string;
+			config false;
+			description "System process status informations";
+		}
+		leaf irq {
+			type string;
+			config false;
+			description "System IRQ status informations";
+		}
+		leaf disk-space {
+			type string;
+			config false;
+			description "System disk usage informations";
+		}
+		leaf test-bits {
+			type bits {
+				bit bit-0 { position 0; }
+				bit bit-1 { position 1; }
+				bit bit-2 { position 2; }
+				bit bit-3 { position 3; }
+				bit bit-4 { position 4; }
+				bit bit-5 { position 5; }
+				bit bit-6 { position 6; }
+				bit bit-7 { position 7; }
+			}
+		}
+	}
+
+	rpc save {
+		input {
+			leaf package {
+				type leafref {
+					path "/system/packages";
+				}
+			}
+		}
+		output {
+			leaf result {
+				type cli:enum_result;
+			}
+		}
+		description "Save the configuration of the whole system or a single module";
+	}
+
+	rpc reload {
+		/*
+		input {
+			leaf package {
+				type leafref {
+					path "/system/packages";
+				}
+			}
+		}
+		*/
+		output {
+			leaf result {
+				type cli:enum_result;
+			}
+		}
+		description "Reload the system plugin";
+	}
+	/*
+	list linuxcommands {
+		key command;
+		leaf command {
+			type string;
+		}
+		leaf description {
+			type string;
+			description "Description of the command shown in the cli";
+		}
+		leaf type {
+			type string {
+				pattern "(linux|command)";
+			}
+			default linux;
+			description "Command type";
+		}
+		leaf script_linux {
+			when "../type = 'linux'";
+			type string;
+			default "/cliscripts/tslinux.sh 0";
+			description "Leaf used when the type is linux";
+		}
+		leaf script_command {
+			when "../type = 'command'";
+			type string;
+			default "/cliscripts/ts%s.sh 0";
+			description "Leaf used when the type is command. It can contain a parameter like '%s' that will be filled with the command name";
+		}
+		description "List which contains first level cli commands";
+	}
+	*/
+	
+	container linuxcommands {
+		presence true;
+		leaf add_user {
+			type string;
+			description "Add a local cli user";
+		}
+		leaf del_user {
+			type string;
+			description "Remove a local cli user";
+		}
+		leaf ping {
+			type string;
+			description "Send ICMP ECHO_REQUEST to network hosts";
+		}
+		leaf ping6 {
+			type string;
+			description "Send ICMP ECHO_REQUEST to network hosts";
+		}
+		leaf ip {
+			type string;
+			description "IP interface configuration and routing utility";
+		}
+		leaf tc {
+			type string;
+			description "Traffic Control utility";
+		}
+		leaf isdnctrl {
+			type string;
+			description "ISDN interface control utility";
+		}
+		leaf arp {
+			type string;
+			description "Manipulates the system ARP cache";
+		}
+		leaf telnet {
+			type string;
+			description "User Interface to Telnet Protocol";
+		}
+		leaf arping {
+			type string;
+			description "send ARP request/replies";
+		}
+		leaf netstat {
+			type string;
+			description "Netstat command";
+		}
+		leaf nc {
+			type string;
+			description "Netcat command";
+		}
+		leaf rdate {
+			type string;
+			description "Get the time via the network";
+		}
+		leaf ssh {
+			type string;
+			description "User Interface to ssh Protocol";
+		}
+		leaf cpustate-mon {
+			type string;
+			description "Monitor the status of the CPU";
+		}
+		leaf scp {
+			type string;
+			description "User Interface to scp Protocol";
+		}
+		leaf openssl {
+			type string;
+			description "User Interface to openssl utility";
+		}
+		leaf traceroute {
+			type string;
+			description "Print the route packets take to network host";
+		}
+		leaf traceroute6 {
+			type string;
+			description "Print the route packets take to network host";
+		}
+		leaf brctl {
+			type string;
+			description "Ethernet Bridge management utility";
+		}
+		leaf iptables {
+			type string;
+			description "Administration tool for packet filtering and NAT";
+		}
+		leaf iptables-save {
+			type empty;
+			description "Save packet filtering and NAT rules";
+		}
+		leaf ip6tables {
+			type string;
+			description "Administration tool for packet filtering and NAT";
+		}
+		leaf reboot {
+			type empty;
+			description "Reboot Imola";
+		}
+		leaf change_password {
+			type string;
+			description "Change the password to a local cli user";
+		}
+		leaf ifstate-mon {
+			type string;
+			description "Monitor the status of an interface";
+		}
+		leaf logger {
+			type string;
+			description "Command interface to the system log module";
+		}
+		leaf tcpdump {
+			type string;
+			description "Dump traffic on a network interface";
+		}
+		leaf watch {
+			type string;
+			description "Executes a command periodically";
+		}
+		leaf top {
+			type string;
+			description "Display Linux processes";
+		}
+		leaf ftp {
+			type string;
+			description "File Transfer Protocol command";
+		}
+		leaf idle {
+			type uint16;
+			description "Idle timeout";
+		}
+		container schedule-reboot {
+			presence true;
+			leaf wait {
+				type uint8;
+				description "Wait before starting reboot";
+				mandatory true;
+			}
+			leaf slot {
+				type uint8 {
+					range "1..7";
+				}
+				description "Slot Number";
+			}
+			description "Schedule a reboot | Unset scheduled reboot";
+		}
+
+		container upload {
+			presence true;
+			choice upload-type {
+				leaf command-file {
+					type string;
+					description "Upload a file";
+				}
+				leaf log-file {
+					type empty;
+					description "Upload Imola log file";
+				}
+				mandatory true;
+			}
+			leaf to {
+				type string; // address?
+				description "TFTP Server IP Address";
+				mandatory true;
+			}
+			description "Upload to a TFTP Server";
+		}
+
+		container download {
+			presence true;
+			choice download-type {
+				leaf banner-file {
+					type string;
+					description "Download a banner file";
+				}
+				leaf banner-exec-file {
+					type string;
+					description "Download a banner-exec file";
+				}
+				leaf command-file {
+					type string;
+					description "Download a command-file";
+				}
+				mandatory true;	
+			}
+			leaf from {
+				type string; // address?
+				description "TFTP Server IP Address";
+				mandatory true;
+			}
+			description "Download from a TFTP Server";
+		}
+		container update {
+			presence true;
+			choice update-type {
+				leaf nos {
+					type empty;
+					description "Update Nos";
+				}
+				leaf system {
+					type empty;
+					description "Update System";
+				}
+				mandatory true;
+			}
+			leaf via-tftp {
+				type string;
+				description "File name";
+				mandatory true;
+			}
+			leaf from {
+				type string; // address?
+				description "TFTP Server IP Address";
+				mandatory true;
+			}
+			leaf size {
+				type uint16 {
+					range "100..8000";
+				}
+				description "Size";
+			}
+			description "Update Nos/System";
+		}
+	}
+
+    leaf hostname {
+        type string;
+        default "yangcli";
+        cli:immediate;
+    }
+
+	container package {
+		uses cli:sr_module;
+		description "[noexec] package factory info";
+	}
+}

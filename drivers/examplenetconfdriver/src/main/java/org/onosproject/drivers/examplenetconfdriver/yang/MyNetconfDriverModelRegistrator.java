@@ -60,6 +60,7 @@ import org.onosproject.yang.gen.v1.tiesseip.rev20170521.TiesseIp;
 import org.onosproject.yang.gen.v1.tiesseospf.rev20170225.TiesseOspf;
 import org.onosproject.yang.gen.v1.tiesseprefixlist.rev20170707.TiessePrefixList;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
+import org.onosproject.yang.gen.v1.tiessesystem.rev20170225.TiesseSystem;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlan;
 import org.onosproject.yang.model.DefaultYangModuleId;
 import org.onosproject.yang.model.YangModuleId;
@@ -177,6 +178,8 @@ public class MyNetconfDriverModelRegistrator extends AbstractYangModelRegistrato
                 new DefaultAppModuleInfo(TiesseVlan.class, null));
         appInfo.put(new DefaultYangModuleId("tiesse-switch", "2017-05-22"),
                 new DefaultAppModuleInfo(TiesseSwitch.class, null));
+        appInfo.put(new DefaultYangModuleId("tiesse-system", "2017-02-25"),
+                new DefaultAppModuleInfo(TiesseSystem.class, null));
         return ImmutableMap.copyOf(appInfo);
     }
 }

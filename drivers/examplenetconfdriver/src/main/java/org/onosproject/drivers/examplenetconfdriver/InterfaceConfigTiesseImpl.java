@@ -98,7 +98,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
 
          */
-
+        log.info("Inside addAccessMode() method");
         //Configuration of switch port, vid and access mode
         TiesseSwitchOpParam tiesseSwitch = new TiesseSwitchOpParam();
 
@@ -115,10 +115,11 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         yangAutoPrefixSwitch.active(Onoff.fromString("on")); // set switch on
 
         tiesseSwitch.yangAutoPrefixSwitch(yangAutoPrefixSwitch);
-
+        log.info("tiesseSwitch object configured");
         boolean reply;
         try {
             //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
+            log.info("Calling interfaceConfigTiesseNetconfService.setTiesseSwitch() ");
             reply = interfaceConfigTiesseNetconfService.setTiesseSwitch(tiesseSwitch, session, DatastoreId.RUNNING);
             //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
         } catch (NetconfException e) {
@@ -248,7 +249,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         */
 
         //Configuration of interface with VLAN
-
+        log.info("Inside IpAddrAndNetmaskToInterface() method");
         TiesseVlanOpParam tiesseVlan = new TiesseVlanOpParam();
         Vlan vlan = new DefaultVlan();
         Vlans vlans = new DefaultVlans();
@@ -281,6 +282,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         boolean reply;
         try {
             //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
+            log.info("Calling setTiesseVlan()");
             reply = interfaceConfigTiesseNetconfService.setTiesseVlan(tiesseVlan, session, DatastoreId.RUNNING);
             //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
         } catch (NetconfException e) {

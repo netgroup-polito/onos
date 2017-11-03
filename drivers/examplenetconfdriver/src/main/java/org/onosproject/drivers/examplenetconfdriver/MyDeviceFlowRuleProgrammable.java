@@ -100,6 +100,8 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
         NetconfSession session = ncDevice.getSession();
         CoreService coreService = checkNotNull(handler().get(CoreService.class));
         ApplicationId appId = coreService.getAppId(EXAMPLENETCONFDRIVER_DRIVERS);
+
+        /*
         OpenconfigBgpNetconfService openconfigBgpNetconfService =
                 (OpenconfigBgpNetconfService) checkNotNull(handler().get(OpenconfigBgpNetconfService.class));
 
@@ -126,7 +128,7 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
                 log.error("Unexpected error on OpenconfigBGP getFlowEntries on {}",
                         handler().data().deviceId(), e);
             }
-        }
+        }*/
 
         return flowEntryCollection;
     }
@@ -147,6 +149,8 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
         }
         NetconfController controller = checkNotNull(handler().get(NetconfController.class));
         NetconfSession session = controller.getDevicesMap().get(handler().data().deviceId()).getSession();
+
+        /*
         OpenconfigBgpNetconfService openconfigBgpNetconfService =
                 (OpenconfigBgpNetconfService) checkNotNull(handler().get(OpenconfigBgpNetconfService.class));
         log.debug("applyFlowRules() called on MyDeviceFlowRuleProgrammable with {} rules.", rules.size());
@@ -166,7 +170,7 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
             } else {
                 log.info("Unexpected Flow Rule type applied: " + fr);
             }
-            */
+            *//*
 
             parseFrForBgp(frAdded, fr, bgp, counter);
             counter++;
@@ -188,7 +192,7 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
 
         }
 
-
+        */
         //sessionMutex.release();
         return frAdded;
     }
@@ -205,6 +209,8 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
     public Collection<FlowRule> removeFlowRules(Collection<FlowRule> rulesToRemove) {
         NetconfController controller = checkNotNull(handler().get(NetconfController.class));
         NetconfSession session = controller.getDevicesMap().get(handler().data().deviceId()).getSession();
+
+
         OpenconfigBgpNetconfService openconfigBgpNetconfService =
                 (OpenconfigBgpNetconfService) checkNotNull(handler().get(OpenconfigBgpNetconfService.class));
 
@@ -214,11 +220,13 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
             return rulesToRemove;
         }
 
+
+        Collection<FlowRule> rulesRemoved = new HashSet<FlowRule>();
+        /*
+
         Bgp bgp = new DefaultBgp();
         int counter = 0; //counter for creating peergroup name
 
-
-        Collection<FlowRule> rulesRemoved = new HashSet<FlowRule>();
         for (FlowRule ruleToRemove : rulesToRemove) {
             // Example to filter the flowrules by the Port 0
             if (ruleToRemove.selector().getCriterion(Type.IPV4_SRC) != null &&
@@ -248,7 +256,7 @@ public class MyDeviceFlowRuleProgrammable extends AbstractHandlerBehaviour imple
                 log.warn("Remove FlowRule on openconfigBgpNetconfService could not delete the rule - "
                         + "it may already have been deleted: " + e.getMessage());
             }
-        }
+        }*/
 
         return rulesRemoved;
     }

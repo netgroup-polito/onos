@@ -103,8 +103,9 @@ public class IetfSystemManager extends AbstractYangServiceImpl
         }
 
         String xmlResult = session.get(getInitRequestBuilder(), null);
-
+        log.info("Session get xml: " + xmlResult);
         xmlResult = removeRpcReplyData(xmlResult);
+        log.info("Session get xml rpc reply data removed: " + xmlResult);
         DefaultCompositeStream resultDcs = new DefaultCompositeStream(
                 null, new ByteArrayInputStream(xmlResult.getBytes()));
         CompositeData compositeData = xSer.decode(resultDcs, yCtx);
@@ -183,21 +184,14 @@ public class IetfSystemManager extends AbstractYangServiceImpl
     private static String getInitRequestBuilder() {
         StringBuilder rpc = new StringBuilder();
         rpc.append("<system-state xmlns=\"urn:ietf:params:xml:ns:yang:ietf-system\" ");
-        rpc.append("xmlns:sysms=\"http://www.microsemi.com/microsemi-edge-assure/msea-system\">");
         rpc.append("<platform>");
         rpc.append("<os-release/>");
-        rpc.append("<sysms:device-identification>");
-        rpc.append("<sysms:serial-number/>");
-        rpc.append("</sysms:device-identification>");
         rpc.append("</platform>");
         rpc.append("<clock>");
         rpc.append("<current-datetime/>");
         rpc.append("</clock>");
         rpc.append("</system-state>");
         rpc.append("<system xmlns=\"urn:ietf:params:xml:ns:yang:ietf-system\" ");
-        rpc.append("xmlns:sysms=\"http://www.microsemi.com/microsemi-edge-assure/msea-system\">");
-        rpc.append("<sysms:longitude/>");
-        rpc.append("<sysms:latitude/>");
         rpc.append("</system>");
         return rpc.toString();
     }

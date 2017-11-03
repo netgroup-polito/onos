@@ -19,8 +19,7 @@ import org.onosproject.netconf.DatastoreId;
 import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
 
-import org.onosproject.yang.gen.v1.openconfigbgp.rev20170730.OpenconfigBgpOpParam;
-import org.onosproject.yang.gen.v1.openconfigbgp.rev20170730.OpenconfigBgp;
+
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlanOpParam;

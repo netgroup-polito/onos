@@ -70,10 +70,10 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
 
     @Override
     public boolean setTiesseSwitch(TiesseSwitchOpParam tiesseSwitch, NetconfSession session, DatastoreId targetDs) throws NetconfException {
-
+        log.info("Inside setTiesseSwitch() ");
         ModelObjectData mo = DefaultModelObjectData.builder()
-                .addModelObject(tiesseSwitch).build();
-
+                .addModelObject((ModelObject) tiesseSwitch.yangAutoPrefixSwitch()).build();
+        log.info("Inside setTiesseSwitch(). Builded model. ");
         return setNetconfObject(mo, session, targetDs, null);
     }
 
@@ -83,10 +83,10 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
 
     @Override
     public boolean setTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session, DatastoreId targetDs) throws NetconfException {
-
+        log.info("Inside setTiesseVlan() ");
         ModelObjectData mo = DefaultModelObjectData.builder()
-                .addModelObject(tiesseVlan).build();
-
+                .addModelObject((ModelObject) tiesseVlan.vlan()).build();
+        log.info("Inside setTiesseVlan(). Builded model. ");
         return setNetconfObject(mo, session, targetDs, null);
     }
 

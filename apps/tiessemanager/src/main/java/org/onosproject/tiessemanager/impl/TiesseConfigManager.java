@@ -144,6 +144,7 @@ public class TiesseConfigManager implements TiesseConfigService {
         for (Device device : devices) {
             if (device.manufacturer().equals("Tiesse")) { //if manufacturer is equal to Tiesse
                 if (device.is(InterfaceConfigTiesse.class)){ // if the interfaceConfig behavior is supported by the device.
+                    log.info("The device implements InterfaceConfigTiesse.");
                     DriverHandler handler = driverService.createHandler(device.id());
                     InterfaceConfigTiesse interfaceConfig = handler.behaviour(InterfaceConfigTiesse.class);
                     if (!accessModeDataList.isEmpty()) { //if accessModeData List is not empty
@@ -154,9 +155,10 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String accessNetmask = accessModeData.getNetmask();
 
                             VlanId accessVlanId = VlanId.vlanId(Short.parseShort(accessVlanString));//parse vlan id from String to VlanId type
-
+                            log.info("Calling method interfaceConfig.addAccessMode()");
                             interfaceConfig.addAccessMode(port, accessVlanId); //set switch in access mode with port and vlan
-                            interfaceConfig.addIpAddrAndNetmaskToInterface(port,accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
+                            log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for access mode");
+                            interfaceConfig.addIpAddrAndNetmaskToInterface("ETH1",accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
                             }
                     }
                     if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
@@ -165,7 +167,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                             {
                                 String port = portVlanEntry.getKey();
                                 List<VlanId> vlanIdList = portVlanEntry.getValue();
-
+                                log.info("Calling method interfaceConfig.addTrunkMode()");
                                 interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
                             }
                         }
@@ -178,7 +180,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String trunkNetmask = trunkModeData.getNetmask();
 
                             VlanId trunkVlanId = VlanId.vlanId(Short.parseShort(trunkVlanString));//parse vlan id from String to VlanId type
-
+                            log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for trunk mode");
                             interfaceConfig.addIpAddrAndNetmaskToInterface(port,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
 
                         }
