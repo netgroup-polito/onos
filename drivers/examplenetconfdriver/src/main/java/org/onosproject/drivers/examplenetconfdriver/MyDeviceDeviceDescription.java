@@ -142,8 +142,8 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
 
     /*
     *
-    * Example of PortDetails. It defines 2 ports: 1 Fiber port 0 and 1 copper port 1.
-    * It also can be defined through a netconf get with the device specific rpc to get the ports
+    * Example of PortDetails. It defines 6 ports: from 0 to 5.
+    * It also could be defined through a netconf get with the device specific rpc to get the ports.
     *
     */
 
@@ -152,10 +152,10 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
 
         List<PortDescription> ports = new ArrayList<PortDescription>();
         /*
-        //Example of static ports assignment (taken from microsemi)
+        //Example of static ports assignment
        */
 
-        //This port is used by microsemi
+        //This port is used by microsemi, not actually available in the Tiesse Imola
         DefaultAnnotations annotationPort0 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth0").build();
         PortDescription port0 = new DefaultPortDescription(PortNumber.portNumber(0), true, Port.Type.COPPER, 1000,
                 annotationPort0);
@@ -188,59 +188,13 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
 
 
         /*
-        //Example of ports assignment with the info obtained through netconf request to the device
-       */
-
-        /*
-        NetconfController controller = checkNotNull(handler().get(NetconfController.class));
-        NetconfDevice ncDevice = controller.getDevicesMap().get(handler().data().deviceId());
-        if (ncDevice == null) {
-            log.error("Internal ONOS Error. Device has been marked as reachable, " +
-                            "but deviceID {} is not in Devices Map. Continuing with empty description",
-                    handler().data().deviceId());
-            return ports;
-        }
-        NetconfSession session = ncDevice.getSession();
-
-        InterfaceConfigTiesseNetconfService interfaceConfigTiesseNetconfService =
-                (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
-
-        TiesseSwitchOpParam op = new TiesseSwitchOpParam();
-
-        try {
-            TiesseSwitch tiesseSwitchCurrent =
-                    interfaceConfigTiesseNetconfService.getTiesseSwitch(op, session);
-            if (tiesseSwitchCurrent != null) {
-
-                List<org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.yangautoprefixswitch.Port> tiessePorts = tiesseSwitchCurrent.yangAutoPrefixSwitch().port();
-                for (org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.yangautoprefixswitch.Port tiessePort: tiessePorts)
-                {
-                    String tiessePortName = tiessePort.name();
-                    PortNumber portNumber = PortNumber.portNumber(1); //portNumber initialized to 1 but will be changed if different
-                    DefaultAnnotations annotationPort = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, tiessePortName).build();
-                    if (tiessePortName.equals("Port 1")) { portNumber = PortNumber.portNumber(1);
-                    } else if (tiessePortName.equals("Port 2")) {portNumber = PortNumber.portNumber(2);
-                    } else if (tiessePortName.equals("Port 3")) {portNumber = PortNumber.portNumber(3);
-                    } else if (tiessePortName.equals("Port 4")) {portNumber = PortNumber.portNumber(4);
-                    }
-                        PortDescription port = new DefaultPortDescription(portNumber, true, Port.Type.COPPER, 1000,
-                                annotationPort);
-                        ports.add(port);
-                    }
-                }
-
-            }
-        catch (NetconfException e) {
-            if (e.getCause() instanceof TimeoutException) {
-                log.warn("Timeout exception getting TiesseSwitch ports from {}",
-                        handler().data().deviceId());
-                return ports;
-            } else {
-                log.error("Unexpected error on TiesseSwitch discoverPortDetails() on {}",
-                        handler().data().deviceId(), e);
-            }
-        }
+        * Ports assignment with the info obtained through netconf request to the device is to be implemented.
+        * Since there's no direct way to get the information about the ports from the Tiesse Imola.
+        * It may be possible to create a way to extract information indirectly from tiesse-system model.
+        *
         */
+
+
 
         return ports;
     }

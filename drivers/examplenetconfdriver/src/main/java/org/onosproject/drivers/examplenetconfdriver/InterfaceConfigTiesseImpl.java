@@ -86,26 +86,19 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         InterfaceConfigTiesseNetconfService interfaceConfigTiesseNetconfService =
                 (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
 
-        /*
+        //log.info("Inside addAccessMode() method");
+
+         /*
         Example of commands to configure the port in access mode (lan splitting off):
 
         set switch port 1 mode access
         set switch port 1 vid 10
         set switch on
 
-        <---This method implements just the commands on top of this comment--->
-
-        <---The commands below are implemented in addIpAddrAndNetmaskToInterface() method--->
-
-        set vlan add vid 10 interface eth1
-
-        set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
-
          */
 
-        log.info("Inside addAccessMode() method");
+        //Configuration for LAN splitting off (NOT USED)
 
-        //Configuration for LAN splitting off
         /*
         //Configuration of switch port, vid and access mode
         TiesseSwitchOpParam tiesseSwitch = new TiesseSwitchOpParam();
@@ -126,10 +119,13 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         */
 
 
+        //Configuration for LAN splitting on (USED)
+
         /*
         Example of commands to configure the port in access mode (lan splitting on):
 
         set eth1 access-vlan vid 50
+        set eth1 on
         */
 
         TiesseEthernetOpParam tiesseEthernet = new TiesseEthernetOpParam();
@@ -207,11 +203,11 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         }
 
 
-        log.info("tiesseEthernet object configured");
+        //log.info("tiesseEthernet object configured");
         boolean reply;
         try {
             //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
-            log.info("Calling interfaceConfigTiesseNetconfService.setTiesseEthernet() ");
+            //log.info("Calling interfaceConfigTiesseNetconfService.setTiesseEthernet() ");
             //reply = interfaceConfigTiesseNetconfService.setTiesseSwitch(tiesseSwitch, session, DatastoreId.RUNNING);
             reply = interfaceConfigTiesseNetconfService.setTiesseEthernet(tiesseEthernet, session, DatastoreId.RUNNING, intf);
             //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
@@ -249,19 +245,6 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set switch port 1 allow vid 3
         set switch port 1 allow vid 4
         set switch on
-
-        <---This method implements just the commands on top of this comment--->
-
-        <---The commands below are implemented in addIpAddrAndNetmaskToInterface() method--->
-
-        set vlan add vid 2 interface eth1
-        set vlan add vid 3 interface eth1
-        set vlan add vid 4 interface eth1
-
-        set vlan eth1.2 ipaddr 192.168.2.1 netmask 255.255.255.0
-        set vlan eth1.3 ipaddr 192.168.3.1 netmask 255.255.255.0
-        set vlan eth1.4 ipaddr 192.168.4.1 netmask 255.255.255.0
-
 
         */
 
@@ -345,11 +328,10 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
         set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
 
-        <---This method implements the commands on top of this comment--->
         */
 
         //Configuration of interface with VLAN
-        log.info("Inside IpAddrAndNetmaskToInterface() method");
+        //log.info("Inside IpAddrAndNetmaskToInterface() method");
         TiesseVlanOpParam tiesseVlan = new TiesseVlanOpParam();
         Vlan vlan = new DefaultVlan();
         Vlans vlans = new DefaultVlans();
@@ -360,14 +342,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
         vlans.vid(vidLong); // set vlan id
         vlans.protocol("802.1q");
-        //TsInterfacesUnionEnum1 tsInterfacesUnionEnum1 = TsInterfacesUnionEnum1.of(intf); //es: intf = ETH0 or intf = ETH1
-        //TsInterfacesUnion tsInterfacesUnion = new TsInterfacesUnion(tsInterfacesUnionEnum1);
-        //TsInterfaces tsInterface = new TsInterfaces(tsInterfacesUnion);
-        //vlans.yangAutoPrefixInterface(tsInterface); //set interface intf
-        vlans.yangAutoPrefixInterface(TsInterfaces.fromString(intf));
-
-        //Ipv4Address ipAddr = Ipv4Address.fromString("192.168.100.1");
-        //Netmask netmask = Netmask.fromString("255.255.255.0");
+        vlans.yangAutoPrefixInterface(TsInterfaces.fromString(intf)); //set interface = intf
 
         /*
         Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
@@ -384,7 +359,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         boolean reply;
         try {
             //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
-            log.info("Calling setTiesseVlan()");
+            //log.info("Calling setTiesseVlan()");
             reply = interfaceConfigTiesseNetconfService.setTiesseVlan(tiesseVlan, session, DatastoreId.RUNNING);
 
 
@@ -398,7 +373,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         return reply;
     }
 
-    //TODO: Implement all the methods under this todo for the Tiesse
+    //TODO: Implement all the methods under this todo for the Tiesse (if necessary)
 
 
     /**

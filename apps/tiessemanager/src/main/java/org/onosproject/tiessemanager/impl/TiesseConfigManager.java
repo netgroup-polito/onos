@@ -118,19 +118,26 @@ public class TiesseConfigManager implements TiesseConfigService {
         return trunkModeDataList;
     }
 
+    /**
+     * This method reads the config received from the JSON file pushed through netcfg.
+     * It saves the configuration read from the JSON in two lists of interfaces:
+     * one for the access mode elements, one for the trunk mode elements.
+     * For every element of the lists, it will be called the appropriate method from the driver
+     * that configures the vlan on the specified interface through a rpc sent with netconf protocol.
+     */
 
     private void readConfig() {
         log.info("Config received. Method readConfig() called.");
         TiesseConfig config = configRegistry.getConfig(appId, TiesseConfig.class);
-        log.info("Config received. Method readConfig() called. Got configuration from configRegistry.");
+        //log.info("Config received. Method readConfig() called. Got configuration from configRegistry.");
         accessModeDataList = config.getAccessModeData();
-        log.info("Config received. Method readConfig() called. Got access mode data list from JSON.");
+        //log.info("Config received. Method readConfig() called. Got access mode data list from JSON.");
         trunkModeDataList = config.getTrunkModeData();
-        log.info("Config received. Method readConfig() called. Got trunk mode data list from JSON.");
+        //log.info("Config received. Method readConfig() called. Got trunk mode data list from JSON.");
 
         trunkModePortVlanMap = TrunkModePortVlanMapCreator(trunkModeDataList);
         trunkModeIntfVlanMap = TrunkModeIntfVlanMapCreator(trunkModeDataList);
-        log.info("Config received. Method readConfig() called. Created port-vlan map  and intf-vlan map for trunk mode data list.");
+        //log.info("Config received. Method readConfig() called. Created port-vlan map  and intf-vlan map for trunk mode data list.");
         ConfigTiesseDevice(trunkModePortVlanMap, trunkModeIntfVlanMap);
 
         log.info("Method readConfig() done.");
@@ -142,13 +149,13 @@ public class TiesseConfigManager implements TiesseConfigService {
      * and assigns them an ip address and a netmask.
      */
     private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap, Map<String, List<VlanId>> trunkModeIntfVlanMap) { //TODO: add ip address and netmask configuration for the vlan
-        log.info("Method ConfigTiesseDevice() called.");
+        //log.info("Method ConfigTiesseDevice() called.");
         Iterable<Device> devices = deviceService.getAvailableDevices();
-        log.info("Method ConfigTiesseDevice() called. Got available devices.");
+        //log.info("Method ConfigTiesseDevice() called. Got available devices.");
         for (Device device : devices) {
             if (device.manufacturer().equals("Tiesse")) { //if manufacturer is equal to Tiesse
                 if (device.is(InterfaceConfigTiesse.class)){ // if the interfaceConfig behavior is supported by the device.
-                    log.info("The device implements InterfaceConfigTiesse.");
+                    //log.info("The device implements InterfaceConfigTiesse.");
                     DriverHandler handler = driverService.createHandler(device.id());
                     InterfaceConfigTiesse interfaceConfig = handler.behaviour(InterfaceConfigTiesse.class);
                     if (!accessModeDataList.isEmpty()) { //if accessModeData List is not empty
@@ -160,11 +167,11 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String accessNetmask = accessModeData.getNetmask();
 
                             VlanId accessVlanId = VlanId.vlanId(Short.parseShort(accessVlanString));//parse vlan id from String to VlanId type
-                            log.info("Calling method interfaceConfig.addAccessMode()");
-                            //interfaceConfig.addAccessMode(port, accessVlanId); //set switch in access mode with port and vlan
-                            interfaceConfig.addAccessMode(intf, accessVlanId); //set switch in access mode with port and vlan
+                            //log.info("Calling method interfaceConfig.addAccessMode()");
+                            //interfaceConfig.addAccessMode(port, accessVlanId); //only for lan splitting off:set switch in access mode with port and vlan
+                            interfaceConfig.addAccessMode(intf, accessVlanId); //only for lan splitting on:set switch in access mode with port and vlan
 
-                            log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for access mode");
+                            //log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for access mode");
                             interfaceConfig.addIpAddrAndNetmaskToInterface(intf,accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
                             }
                     }
@@ -181,20 +188,6 @@ public class TiesseConfigManager implements TiesseConfigService {
 
                             }
                         }*/
-                        /*
-                        if(!trunkModeIntfVlanMap.isEmpty()) { //if the port-vlanlist map is not empty
-                            for (Map.Entry<String, List<VlanId>> intfVlanEntry : trunkModeIntfVlanMap.entrySet()) //for every port-vlanlist map element
-                            {
-                                String intf = intfVlanEntry.getKey();
-                                List<VlanId> vlanIdList = intfVlanEntry.getValue();
-                                log.info("Calling method interfaceConfig.addTrunkMode()");
-                                //interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
-                                interfaceConfig.addTrunkMode(intf, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
-
-                            }
-                        }
-                        */
-
 
                         for (TrunkData trunkModeData: trunkModeDataList) { //second cycle to add vlan interface and ip addr
 
@@ -205,7 +198,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String trunkNetmask = trunkModeData.getNetmask();
 
                             VlanId trunkVlanId = VlanId.vlanId(Short.parseShort(trunkVlanString));//parse vlan id from String to VlanId type
-                            log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for trunk mode");
+                            //log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for trunk mode");
                             interfaceConfig.addIpAddrAndNetmaskToInterface(intf,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
 
                         }
@@ -220,7 +213,7 @@ public class TiesseConfigManager implements TiesseConfigService {
      * Creates a map with port as key and list of vlans for that port as value for trunk mode.
      */
     public Map<String, List<VlanId>> TrunkModePortVlanMapCreator(List<TrunkData> trunkModeDataList){
-        log.info("Method TrunkModePortVlanMapCreator() called.");
+        //log.info("Method TrunkModePortVlanMapCreator() called.");
         Map<String, List<VlanId>> portVlansMap = new HashMap<>(); //map with port, vlan id list for that port
 
         if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
@@ -259,7 +252,7 @@ public class TiesseConfigManager implements TiesseConfigService {
      * Creates a map with interface as key and list of vlans for that interface as value for trunk mode.
      */
     public Map<String, List<VlanId>> TrunkModeIntfVlanMapCreator(List<TrunkData> trunkModeDataList){
-        log.info("Method TrunkModePortVlanMapCreator() called.");
+        //log.info("Method TrunkModePortVlanMapCreator() called.");
         Map<String, List<VlanId>> intfVlansMap = new HashMap<>(); //map with port, vlan id list for that port
 
         if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
@@ -293,6 +286,11 @@ public class TiesseConfigManager implements TiesseConfigService {
         }
         return intfVlansMap;
     }
+
+    /**
+     * Listener to make this app listen to events relative to the netcfg app.
+     * The JSON file received is then passed to the readConfig() method.
+     */
 
     private class InternalConfigListener implements NetworkConfigListener {
         @Override

@@ -127,10 +127,30 @@ public abstract class AbstractYangServiceImpl {
     protected static final Pattern TIESSE_SWITCH_VID_CLOSE =
             Pattern.compile("(</vid>)");
 
-    protected static final Pattern TIESSE_ETH_OPEN =
+    protected static final Pattern TIESSE_ETH0_OPEN =
+            Pattern.compile("(<eth0)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
+    protected static final Pattern TIESSE_ETH1_OPEN =
+            Pattern.compile("(<eth1)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
+    protected static final Pattern TIESSE_ETH2_OPEN =
             Pattern.compile("(<eth2)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
-    protected static final Pattern TIESSE_ETH_CLOSE =
+    protected static final Pattern TIESSE_ETH3_OPEN =
+            Pattern.compile("(<eth3)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
+    protected static final Pattern TIESSE_ETH4_OPEN =
+            Pattern.compile("(<eth4)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
+    protected static final Pattern TIESSE_ETH5_OPEN =
+            Pattern.compile("(<eth5)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
+    protected static final Pattern TIESSE_ETH0_CLOSE =
+            Pattern.compile("(</eth0>)");
+    protected static final Pattern TIESSE_ETH1_CLOSE =
+            Pattern.compile("(</eth1>)");
+    protected static final Pattern TIESSE_ETH2_CLOSE =
             Pattern.compile("(</eth2>)");
+    protected static final Pattern TIESSE_ETH3_CLOSE =
+            Pattern.compile("(</eth3>)");
+    protected static final Pattern TIESSE_ETH4_CLOSE =
+            Pattern.compile("(</eth4>)");
+    protected static final Pattern TIESSE_ETH5_CLOSE =
+            Pattern.compile("(</eth5>)");
     protected static final Pattern TIESSE_ETH_ACTIVE_OPEN =
             Pattern.compile("(<active>)");
     protected static final Pattern TIESSE_ETH_ACTIVE_CLOSE =
@@ -143,6 +163,14 @@ public abstract class AbstractYangServiceImpl {
             Pattern.compile("(<vid>)");
     protected static final Pattern TIESSE_ETH_VID_CLOSE =
             Pattern.compile("(</vid>)");
+    protected static final Pattern TIESSE_ETH_IPADDR_OPEN =
+            Pattern.compile("(<ipaddr>)");
+    protected static final Pattern TIESSE_ETH_IPADDR_CLOSE =
+            Pattern.compile("(</ipaddr>)");
+    protected static final Pattern TIESSE_ETH_NETMASK_OPEN =
+            Pattern.compile("(<netmask>)");
+    protected static final Pattern TIESSE_ETH_NETMASK_CLOSE =
+            Pattern.compile("(</netmask>)");
 
     protected static final Pattern TIESSE_VLAN_OPEN =
             Pattern.compile("(<vlan)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-vlan\">)");
@@ -272,7 +300,9 @@ public abstract class AbstractYangServiceImpl {
     }
 
     /**
-     * Internal method to generically make a NETCONF edit-config call from a set of YANG objects.
+     * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseSwitch.
+     * It also adds the namespace prefix "tiesse-switch:" to the fields of the xml message before sending it
+     * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
      * @param session A NETCONF session
@@ -300,11 +330,15 @@ public abstract class AbstractYangServiceImpl {
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
+        //log.info("Inside setTiesseSwitch(). Builded model. ");
+        log.info("Sending TiesseSwitch <edit-config> rpc... ");
         return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
     }
 
     /**
-     * Internal method to generically make a NETCONF edit-config call from a set of YANG objects.
+     * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseEthernet.
+     * It also adds the namespace prefix "eth:" to the fields of the xml message before sending it
+     * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
      * @param session A NETCONF session
@@ -326,17 +360,21 @@ public abstract class AbstractYangServiceImpl {
 
         String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
 
-        String xmlQueryStrWithPrefix = tiesseEthernetTwoRpcAddPrefix(xmlQueryStr);
+        String xmlQueryStrWithPrefix = tiesseEthernetRpcAddPrefix(xmlQueryStr);
         log.info("xmlQueryStr -->: {}", xmlQueryStr);
         log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
+
+        log.info("Sending TiesseEthernet <edit-config> rpc... ");
         return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
     }
 
     /**
-     * Internal method to generically make a NETCONF edit-config call from a set of YANG objects.
+     * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseVlan.
+     * It also adds the namespace prefix "vlan:" to the fields of the xml message before sending it
+     * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
      * @param session A NETCONF session
@@ -364,6 +402,8 @@ public abstract class AbstractYangServiceImpl {
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
+
+        log.info("Sending TiesseVlan <edit-config> rpc... ");
         return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
     }
 
@@ -371,9 +411,9 @@ public abstract class AbstractYangServiceImpl {
                                             List<AnnotatedNodeInfo> annotations)
             throws NetconfException {
         //Convert the param to XML to use as a filter
-        log.info("Inside encodeMoToXmlStr");
+        //log.info("Inside encodeMoToXmlStr");
         ResourceData rd = ((ModelConverter) yangModelRegistry).createDataNode(yangObjectOpParamFilter);
-        log.info("Inside encodeMoToXmlStr. Created data node.");
+        //log.info("Inside encodeMoToXmlStr. Created data node.");
         DefaultCompositeData.Builder cdBuilder =
                         DefaultCompositeData.builder().resourceData(rd);
         if (annotations != null) {
@@ -383,7 +423,7 @@ public abstract class AbstractYangServiceImpl {
         }
         CompositeStream cs = xSer.encode(cdBuilder.build(), yCtx);
         //Convert the param to XML to use as a filter
-        log.info("Inside encodeMoToXmlStr. Encoded to xml");
+        //log.info("Inside encodeMoToXmlStr. Encoded to xml");
 
         try {
             ByteSource byteSource = new ByteSource() {
@@ -411,6 +451,11 @@ public abstract class AbstractYangServiceImpl {
         return rpcReplyXml;
     }
 
+/**
+ * Method that adds the namespace prefix "tiesse-switch:" to every field of the xml message before sending it,
+ * since the message automatically created from the code is missing it.
+ **/
+
     protected static final String tiesseSwitchRpcAddPrefix(String rpcXml) {
         rpcXml = TIESSE_SWITCH_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:switch xmlns:tiesse-switch=\"urn:ietf:params:xml:ns:yang:tiesse-switch\">");
         rpcXml = TIESSE_SWITCH_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:switch>");
@@ -428,18 +473,42 @@ public abstract class AbstractYangServiceImpl {
         return rpcXml;
     }
 
-    protected static final String tiesseEthernetTwoRpcAddPrefix(String rpcXml) {
-        rpcXml = TIESSE_ETH_OPEN.matcher(rpcXml).replaceFirst("<eth:eth2 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
-        rpcXml = TIESSE_ETH_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth2>");
+    /**
+     * Method that adds the namespace prefix "eth:" to every field of the xml message before sending it,
+     * since the message automatically created from the code is missing it.
+     **/
+
+    protected static final String tiesseEthernetRpcAddPrefix(String rpcXml) {
+        rpcXml = TIESSE_ETH0_OPEN.matcher(rpcXml).replaceFirst("<eth:eth0 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH1_OPEN.matcher(rpcXml).replaceFirst("<eth:eth1 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH2_OPEN.matcher(rpcXml).replaceFirst("<eth:eth2 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH3_OPEN.matcher(rpcXml).replaceFirst("<eth:eth3 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH4_OPEN.matcher(rpcXml).replaceFirst("<eth:eth4 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH5_OPEN.matcher(rpcXml).replaceFirst("<eth:eth5 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH0_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth0>");
+        rpcXml = TIESSE_ETH1_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth1>");
+        rpcXml = TIESSE_ETH2_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth2>");
+        rpcXml = TIESSE_ETH3_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth3>");
+        rpcXml = TIESSE_ETH4_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth4>");
+        rpcXml = TIESSE_ETH5_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth5>");
         rpcXml = TIESSE_ETH_ACTIVE_OPEN.matcher(rpcXml).replaceFirst("<eth:active>");
         rpcXml = TIESSE_ETH_ACTIVE_CLOSE.matcher(rpcXml).replaceFirst("</eth:active>");
         rpcXml = TIESSE_ETH_ACCESS_OPEN.matcher(rpcXml).replaceFirst("<eth:access-vlan>");
         rpcXml = TIESSE_ETH_ACCESS_CLOSE.matcher(rpcXml).replaceFirst("</eth:access-vlan>");
         rpcXml = TIESSE_ETH_VID_OPEN.matcher(rpcXml).replaceFirst("<eth:vid>");
         rpcXml = TIESSE_ETH_VID_CLOSE.matcher(rpcXml).replaceFirst("</eth:vid>");
+        rpcXml = TIESSE_ETH_IPADDR_OPEN.matcher(rpcXml).replaceFirst("<eth:ipaddr>");
+        rpcXml = TIESSE_ETH_IPADDR_CLOSE.matcher(rpcXml).replaceFirst("</eth:ipaddr>");
+        rpcXml = TIESSE_ETH_NETMASK_OPEN.matcher(rpcXml).replaceFirst("<eth:netmask>");
+        rpcXml = TIESSE_ETH_NETMASK_CLOSE.matcher(rpcXml).replaceFirst("</eth:netmask>");
 
         return rpcXml;
     }
+
+    /**
+     * Method that adds the namespace prefix "vlan:" to every field of the xml message before sending it,
+     * since the message automatically created from the code is missing it.
+     **/
 
     protected static final String tiesseVlanRpcAddPrefix(String rpcXml) {
         rpcXml = TIESSE_VLAN_OPEN.matcher(rpcXml).replaceFirst("<vlan:vlan xmlns:vlan=\"urn:ietf:params:xml:ns:yang:tiesse-vlan\">");

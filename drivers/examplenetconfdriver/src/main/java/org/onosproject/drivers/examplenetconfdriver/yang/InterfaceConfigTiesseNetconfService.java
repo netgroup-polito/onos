@@ -74,6 +74,7 @@ public interface InterfaceConfigTiesseNetconfService {
 
     /**
      * Deletes the value to attribute tiesseVlan.
+     * Not implemented.
      *
      * @param tiesseVlan value of tiesseVlan
      * @param session An active NETCONF session
@@ -84,17 +85,7 @@ public interface InterfaceConfigTiesseNetconfService {
     boolean deleteTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session,
                              DatastoreId targetDs) throws NetconfException;
 
-    /**
-     * Returns the filtered model.
-     *
-     * @param tiesseSwitch value of tiesseSwitch to use as filter
-     * @param session An active NETCONF session
-     * @return TiesseSwitch
-     * @throws NetconfException if the session has any error
-     */
 
-    TiesseSwitch getTiesseSwitch(TiesseSwitchOpParam tiesseSwitch, NetconfSession session)
-            throws NetconfException;
 
 
 }
