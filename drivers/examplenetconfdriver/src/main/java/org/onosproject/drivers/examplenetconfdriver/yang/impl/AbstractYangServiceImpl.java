@@ -164,6 +164,10 @@ public abstract class AbstractYangServiceImpl {
             Pattern.compile("(<protocol>)");
     protected static final Pattern TIESSE_VLAN_PROTOCOL_CLOSE =
             Pattern.compile("(</protocol>)");
+    protected static final Pattern TIESSE_VLAN_ACTIVE_OPEN =
+            Pattern.compile("(<active>)");
+    protected static final Pattern TIESSE_VLAN_ACTIVE_CLOSE =
+            Pattern.compile("(</active>)");
 
 
     @Activate
@@ -448,6 +452,8 @@ public abstract class AbstractYangServiceImpl {
         rpcXml = TIESSE_VLAN_INTF_CLOSE.matcher(rpcXml).replaceFirst("</vlan:interface>");
         rpcXml = TIESSE_VLAN_PROTOCOL_OPEN.matcher(rpcXml).replaceFirst("<vlan:protocol>");
         rpcXml = TIESSE_VLAN_PROTOCOL_CLOSE.matcher(rpcXml).replaceFirst("</vlan:protocol>");
+        rpcXml = TIESSE_VLAN_ACTIVE_OPEN.matcher(rpcXml).replaceFirst("<vlan:active>");
+        rpcXml = TIESSE_VLAN_ACTIVE_CLOSE.matcher(rpcXml).replaceFirst("</vlan:active>");
         return rpcXml;
     }
 }

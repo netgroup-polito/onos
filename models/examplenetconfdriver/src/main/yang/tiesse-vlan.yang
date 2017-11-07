@@ -102,6 +102,10 @@ module tiesse-vlan {
                 description "physical interface";
             }
             uses vlan-params;
+	    leaf active {
+                type cli:onoff;
+                default "off";
+            }
             description "[new] Vlan list";
             cli:hidden;
         }

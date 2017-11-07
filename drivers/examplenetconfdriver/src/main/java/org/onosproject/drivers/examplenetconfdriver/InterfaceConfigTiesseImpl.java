@@ -87,7 +87,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
                 (InterfaceConfigTiesseNetconfService) checkNotNull(handler().get(InterfaceConfigTiesseNetconfService.class));
 
         /*
-        Example of commands to configure the port in access mode:
+        Example of commands to configure the port in access mode (lan splitting off):
 
         set switch port 1 mode access
         set switch port 1 vid 10
@@ -126,10 +126,12 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         */
 
 
-                /*
-        Example of commands to configure the port in access mode:
+        /*
+        Example of commands to configure the port in access mode (lan splitting on):
 
-        set eth1 access-vlan vid 50*/
+        set eth1 access-vlan vid 50
+        */
+
         TiesseEthernetOpParam tiesseEthernet = new TiesseEthernetOpParam();
 
         if(intf.equals("eth0")) {
@@ -232,8 +234,15 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
      */
     @Override
     public boolean addTrunkMode(String intf, List<VlanId> vlanIds) {
+
+        //IMPORTANT: With lan splitting on this method is not to be called.
+        //           Trunk Mode is implicit with lan splitting on.
+        //           Just need to give the command: set vlan add vid x interface y
+        //           This makes that interface accept packets with vlan id x, as if it was a trunk port.
+
+
         /*
-        Example of commands to configure the port in trunk mode:
+        Example of commands to configure the port in trunk mode( lan splitting off):
 
         set switch port 1 mode trunk
         set switch port 1 allow vid 2
@@ -360,11 +369,14 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         //Ipv4Address ipAddr = Ipv4Address.fromString("192.168.100.1");
         //Netmask netmask = Netmask.fromString("255.255.255.0");
 
-        //Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
-       // Netmask netmaskVar = Netmask.fromString(netmask);
-        //vlans.ipaddr(ipAddr);
-        //vlans.netmask(netmaskVar);
+        /*
+        Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
+        Netmask netmaskVar = Netmask.fromString(netmask);
+        vlans.ipaddr(ipAddr);
+        vlans.netmask(netmaskVar);
+        */
 
+        vlans.active(Onoff.fromString("on"));
 
         vlan.addToVlans(vlans); //add this vlan to the list of vlans
         tiesseVlan.vlan(vlan); //add

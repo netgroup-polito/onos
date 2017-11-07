@@ -156,32 +156,32 @@ public class MyDeviceDeviceDescription extends AbstractHandlerBehaviour implemen
        */
 
         //This port is used by microsemi
-        DefaultAnnotations annotationPort0 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Eth 0").build();
+        DefaultAnnotations annotationPort0 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth0").build();
         PortDescription port0 = new DefaultPortDescription(PortNumber.portNumber(0), true, Port.Type.COPPER, 1000,
                 annotationPort0);
         ports.add(port0);
 
-        DefaultAnnotations annotationPort1 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Eth 1").build();
+        DefaultAnnotations annotationPort1 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth1").build();
         PortDescription port1 = new DefaultPortDescription(PortNumber.portNumber(1), true, Port.Type.COPPER, 1000,
                 annotationPort1);
         ports.add(port1);
 
-        DefaultAnnotations annotationPort2 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Eth 2").build();
+        DefaultAnnotations annotationPort2 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth2").build();
         PortDescription port2 = new DefaultPortDescription(PortNumber.portNumber(2), true, Port.Type.COPPER, 1000,
                 annotationPort2);
         ports.add(port2);
 
-        DefaultAnnotations annotationPort3 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Eth 3").build();
+        DefaultAnnotations annotationPort3 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth3").build();
         PortDescription port3 = new DefaultPortDescription(PortNumber.portNumber(3), true, Port.Type.COPPER, 1000,
                 annotationPort3);
         ports.add(port3);
 
-        DefaultAnnotations annotationPort4 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Eth 4").build();
+        DefaultAnnotations annotationPort4 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth4").build();
         PortDescription port4 = new DefaultPortDescription(PortNumber.portNumber(4), true, Port.Type.COPPER, 1000,
                 annotationPort4);
         ports.add(port4);
 
-        DefaultAnnotations annotationPort5 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "Eth 5").build();
+        DefaultAnnotations annotationPort5 = DefaultAnnotations.builder().set(AnnotationKeys.PORT_NAME, "eth5").build();
         PortDescription port5 = new DefaultPortDescription(PortNumber.portNumber(5), true, Port.Type.COPPER, 1000,
                 annotationPort5);
         ports.add(port5);

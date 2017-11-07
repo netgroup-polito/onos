@@ -177,12 +177,11 @@ public class TiesseConfigManager implements TiesseConfigService {
                                 String port = portVlanEntry.getKey();
                                 List<VlanId> vlanIdList = portVlanEntry.getValue();
                                 log.info("Calling method interfaceConfig.addTrunkMode()");
-                                //interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
                                 interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
 
                             }
                         }*/
-
+                        /*
                         if(!trunkModeIntfVlanMap.isEmpty()) { //if the port-vlanlist map is not empty
                             for (Map.Entry<String, List<VlanId>> intfVlanEntry : trunkModeIntfVlanMap.entrySet()) //for every port-vlanlist map element
                             {
@@ -194,6 +193,7 @@ public class TiesseConfigManager implements TiesseConfigService {
 
                             }
                         }
+                        */
 
 
                         for (TrunkData trunkModeData: trunkModeDataList) { //second cycle to add vlan interface and ip addr
