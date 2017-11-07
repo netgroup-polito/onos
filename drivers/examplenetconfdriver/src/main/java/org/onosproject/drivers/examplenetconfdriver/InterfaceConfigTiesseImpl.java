@@ -310,7 +310,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
 
     @Override
-    public boolean addIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask) {
+    public boolean addVlanAndIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask) {
 
         NetconfController controller = checkNotNull(handler()
                 .get(NetconfController.class));

@@ -16,7 +16,6 @@
 
 package org.onosproject.tiessemanager.impl;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.felix.scr.annotations.*;
 import org.onlab.packet.VlanId;
 import org.onosproject.core.ApplicationId;
@@ -171,8 +170,8 @@ public class TiesseConfigManager implements TiesseConfigService {
                             //interfaceConfig.addAccessMode(port, accessVlanId); //only for lan splitting off:set switch in access mode with port and vlan
                             interfaceConfig.addAccessMode(intf, accessVlanId); //only for lan splitting on:set switch in access mode with port and vlan
 
-                            //log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for access mode");
-                            interfaceConfig.addIpAddrAndNetmaskToInterface(intf,accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
+                            //log.info("Calling method interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface() for access mode");
+                            interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface(intf,accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
                             }
                     }
                     if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
@@ -198,8 +197,8 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String trunkNetmask = trunkModeData.getNetmask();
 
                             VlanId trunkVlanId = VlanId.vlanId(Short.parseShort(trunkVlanString));//parse vlan id from String to VlanId type
-                            //log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for trunk mode");
-                            interfaceConfig.addIpAddrAndNetmaskToInterface(intf,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
+                            //log.info("Calling method interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface() for trunk mode");
+                            interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface(intf,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
 
                         }
                     }
