@@ -6,6 +6,7 @@ package org.onosproject.tiessemanager.impl.config;
 
 public class TrunkData {
 
+    private String intf;
     private String port;
     private String vlan;
     private String ipaddress;
@@ -14,11 +15,20 @@ public class TrunkData {
     public TrunkData() {
     }
 
-    public TrunkData(String port, String vlan, String ipaddress, String netmask) {
+    public TrunkData(String intf, String port, String vlan, String ipaddress, String netmask) {
+        this.intf = intf;
         this.port = port;
         this.vlan = vlan;
         this.ipaddress = ipaddress;
         this.netmask = netmask;
+    }
+
+    public String getIntf() {
+        return intf;
+    }
+
+    public void setIntf(String intf) {
+        this.intf = intf;
     }
 
     public String getPort() {
@@ -54,6 +64,6 @@ public class TrunkData {
     }
 
     public boolean isEmpty() {
-        return port == null && vlan == null && ipaddress == null && netmask == null;
+        return intf == null && port == null && vlan == null && ipaddress == null && netmask == null;
     }
 }

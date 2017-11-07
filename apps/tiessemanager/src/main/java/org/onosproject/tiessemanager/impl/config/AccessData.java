@@ -7,6 +7,7 @@ package org.onosproject.tiessemanager.impl.config;
 
 public class AccessData {
 
+    private String intf;
     private String port;
     private String vlan;
     private String ipaddress;
@@ -16,14 +17,22 @@ public class AccessData {
     public AccessData() {
     }
 
-    public AccessData(String port, String vlan, String ipaddress, String netmask) {
+    public AccessData(String intf, String port, String vlan, String ipaddress, String netmask) {
 
+        this.intf = intf;
         this.port = port;
         this.vlan = vlan;
         this.ipaddress = ipaddress;
         this.netmask = netmask;
     }
 
+    public String getIntf() {
+        return intf;
+    }
+
+    public void setIntf(String intf) {
+        this.intf = intf;
+    }
 
     public void setPort(String port) {
         this.port = port;
@@ -59,7 +68,7 @@ public class AccessData {
     }
 
     public boolean isEmpty() {
-        return port == null && vlan == null && ipaddress == null && netmask == null;
+        return intf == null && port == null && vlan == null && ipaddress == null && netmask == null;
     }
 
 }

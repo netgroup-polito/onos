@@ -32,6 +32,7 @@ import java.util.Map;
 public class TiesseConfig extends Config<ApplicationId> {
 
     private static final String VLANS = "vlans";
+    private static final String INTERFACE = "interface";
     private static final String PORT = "port";
     private static final String VLAN = "vlan";
     private static final String MODE = "mode";
@@ -53,12 +54,13 @@ public class TiesseConfig extends Config<ApplicationId> {
             String mode = vlansElem.path(MODE).asText();
             if (mode.equals("ACCESS")) {
 
+                String intf = vlansElem.path(INTERFACE).asText();
                 String port = vlansElem.path(PORT).asText();
                 String vlan = vlansElem.path(VLAN).asText();
                 String ipaddress = vlansElem.path(IP_ADDRESS).asText();
                 String netmask = vlansElem.path(NETMASK).asText();
 
-                AccessData accessData = new AccessData(port, vlan, ipaddress, netmask);
+                AccessData accessData = new AccessData(intf, port, vlan, ipaddress, netmask);
                 accessDataList.add(accessData);
             }
         });
@@ -81,12 +83,14 @@ public class TiesseConfig extends Config<ApplicationId> {
 
             String mode = vlansElem.path(MODE).asText();
             if (mode.equals("TRUNK")) {
+
+                String intf = vlansElem.path(INTERFACE).asText();
                 String port = vlansElem.path(PORT).asText();
                 String vlan = vlansElem.path(VLAN).asText();
                 String ipaddress = vlansElem.path(IP_ADDRESS).asText();
                 String netmask = vlansElem.path(NETMASK).asText();
 
-                TrunkData trunkData = new TrunkData(port, vlan, ipaddress, netmask);
+                TrunkData trunkData = new TrunkData(intf, port, vlan, ipaddress, netmask);
                 trunkDataList.add(trunkData);
             }
         });

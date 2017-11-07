@@ -32,6 +32,10 @@ import org.onosproject.yang.gen.v1.tiessecli.rev20170703.tiessecli.Onoff;
 import org.onosproject.yang.gen.v1.tiessecli.rev20170703.tiessecli.TsInterfaces;
 import org.onosproject.yang.gen.v1.tiessecli.rev20170703.tiessecli.tsinterfaces.TsInterfacesUnion;
 import org.onosproject.yang.gen.v1.tiessecli.rev20170703.tiessecli.tsinterfaces.tsinterfacesunion.TsInterfacesUnionEnum1;
+import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.TiesseEthernetOpParam;
+import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.tiesseethernet.*;
+import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.tiesseethernet.ethparams.AccessVlan;
+import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.tiesseethernet.ethparams.DefaultAccessVlan;
 import org.onosproject.yang.gen.v1.tiesseip.rev20170521.tiesseip.Ipv4Address;
 import org.onosproject.yang.gen.v1.tiesseip.rev20170521.tiesseip.Netmask;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
@@ -98,7 +102,11 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
 
          */
+
         log.info("Inside addAccessMode() method");
+
+        //Configuration for LAN splitting off
+        /*
         //Configuration of switch port, vid and access mode
         TiesseSwitchOpParam tiesseSwitch = new TiesseSwitchOpParam();
 
@@ -115,12 +123,95 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         yangAutoPrefixSwitch.active(Onoff.fromString("on")); // set switch on
 
         tiesseSwitch.yangAutoPrefixSwitch(yangAutoPrefixSwitch);
-        log.info("tiesseSwitch object configured");
+        */
+
+
+                /*
+        Example of commands to configure the port in access mode:
+
+        set eth1 access-vlan vid 50*/
+        TiesseEthernetOpParam tiesseEthernet = new TiesseEthernetOpParam();
+
+        if(intf.equals("eth0")) {
+            Eth0 eth0 = new DefaultEth0();
+            AccessVlan accessVlan = new DefaultAccessVlan();
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            accessVlan.vid(vidLong);
+
+            eth0.accessVlan(accessVlan);
+            eth0.active(Onoff.fromString("on"));
+            tiesseEthernet.eth0(eth0);
+        }
+
+        if(intf.equals("eth1")) {
+            Eth1 eth1 = new DefaultEth1();
+            AccessVlan accessVlan = new DefaultAccessVlan();
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            accessVlan.vid(vidLong);
+
+            eth1.accessVlan(accessVlan);
+            eth1.active(Onoff.fromString("on"));
+            tiesseEthernet.eth1(eth1);
+        }
+
+        if(intf.equals("eth2")) {
+            Eth2 eth2 = new DefaultEth2();
+            AccessVlan accessVlan = new DefaultAccessVlan();
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            accessVlan.vid(vidLong);
+
+            eth2.accessVlan(accessVlan);
+            eth2.active(Onoff.fromString("on"));
+            tiesseEthernet.eth2(eth2);
+        }
+
+        if(intf.equals("eth3")) {
+            Eth3 eth3 = new DefaultEth3();
+            AccessVlan accessVlan = new DefaultAccessVlan();
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            accessVlan.vid(vidLong);
+
+            eth3.accessVlan(accessVlan);
+            eth3.active(Onoff.fromString("on"));
+            tiesseEthernet.eth3(eth3);
+        }
+
+        if(intf.equals("eth4")) {
+            Eth4 eth4 = new DefaultEth4();
+            AccessVlan accessVlan = new DefaultAccessVlan();
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            accessVlan.vid(vidLong);
+
+            eth4.accessVlan(accessVlan);
+            eth4.active(Onoff.fromString("on"));
+            tiesseEthernet.eth4(eth4);
+        }
+
+        if(intf.equals("eth5")) {
+            Eth5 eth5 = new DefaultEth5();
+            AccessVlan accessVlan = new DefaultAccessVlan();
+            String vlanIdString = vlanId.toString(); //parse from short to string
+            Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
+            accessVlan.vid(vidLong);
+
+            eth5.accessVlan(accessVlan);
+            eth5.active(Onoff.fromString("on"));
+            tiesseEthernet.eth5(eth5);
+        }
+
+
+        log.info("tiesseEthernet object configured");
         boolean reply;
         try {
             //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
-            log.info("Calling interfaceConfigTiesseNetconfService.setTiesseSwitch() ");
-            reply = interfaceConfigTiesseNetconfService.setTiesseSwitch(tiesseSwitch, session, DatastoreId.RUNNING);
+            log.info("Calling interfaceConfigTiesseNetconfService.setTiesseEthernet() ");
+            //reply = interfaceConfigTiesseNetconfService.setTiesseSwitch(tiesseSwitch, session, DatastoreId.RUNNING);
+            reply = interfaceConfigTiesseNetconfService.setTiesseEthernet(tiesseEthernet, session, DatastoreId.RUNNING, intf);
             //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
         } catch (NetconfException e) {
             log.error("Failed to configure VLAN ID {} on device {} interface {}.",
@@ -254,36 +345,37 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         Vlan vlan = new DefaultVlan();
         Vlans vlans = new DefaultVlans();
 
-        tiesseVlan.vlan(vlan); //add
+
 
         String vlanIdString = vlanId.toString(); //parse from short to string
         Long vidLong = Long.parseLong(vlanIdString); //parse from string to long
         vlans.vid(vidLong); // set vlan id
         vlans.protocol("802.1q");
-        TsInterfacesUnionEnum1 tsInterfacesUnionEnum1 = TsInterfacesUnionEnum1.of(intf); //es: intf = ETH0 or intf = ETH1
-        TsInterfacesUnion tsInterfacesUnion = new TsInterfacesUnion(tsInterfacesUnionEnum1);
-        TsInterfaces tsInterface = new TsInterfaces(tsInterfacesUnion);
-        vlans.yangAutoPrefixInterface(tsInterface); //set interface intf
-
+        //TsInterfacesUnionEnum1 tsInterfacesUnionEnum1 = TsInterfacesUnionEnum1.of(intf); //es: intf = ETH0 or intf = ETH1
+        //TsInterfacesUnion tsInterfacesUnion = new TsInterfacesUnion(tsInterfacesUnionEnum1);
+        //TsInterfaces tsInterface = new TsInterfaces(tsInterfacesUnion);
+        //vlans.yangAutoPrefixInterface(tsInterface); //set interface intf
+        vlans.yangAutoPrefixInterface(TsInterfaces.fromString(intf));
 
         //Ipv4Address ipAddr = Ipv4Address.fromString("192.168.100.1");
         //Netmask netmask = Netmask.fromString("255.255.255.0");
-        Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
-        Netmask netmaskVar = Netmask.fromString(netmask);
+
+        //Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
+       // Netmask netmaskVar = Netmask.fromString(netmask);
+        //vlans.ipaddr(ipAddr);
+        //vlans.netmask(netmaskVar);
 
 
-        vlans.ipaddr(ipAddr);
-        vlans.netmask(netmaskVar);
-
-
-        tiesseVlan.vlan().addToVlans(vlans); //add this vlan to the list of vlans
-
+        vlan.addToVlans(vlans); //add this vlan to the list of vlans
+        tiesseVlan.vlan(vlan); //add
 
         boolean reply;
         try {
             //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
             log.info("Calling setTiesseVlan()");
             reply = interfaceConfigTiesseNetconfService.setTiesseVlan(tiesseVlan, session, DatastoreId.RUNNING);
+
+
             //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
         } catch (NetconfException e) {
             log.error("Failed to configure VLAN ID {} on device {} interface {}.",

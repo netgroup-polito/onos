@@ -20,6 +20,7 @@ import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
 
 
+import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.TiesseEthernetOpParam;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlanOpParam;
@@ -31,7 +32,7 @@ import org.onosproject.yang.gen.v1.tiessevlan.rev20170225.TiesseVlanOpParam;
 public interface InterfaceConfigTiesseNetconfService {
 
     /**
-     * Sets the value to attribute tiesseVlan.
+     * Sets the value to attribute tiesseSwitch.
      *
      * @param tiesseSwitch value of tiesseSwitch
      * @param session An active NETCONF session
@@ -42,6 +43,21 @@ public interface InterfaceConfigTiesseNetconfService {
 
     boolean setTiesseSwitch(TiesseSwitchOpParam tiesseSwitch, NetconfSession session,
                             DatastoreId targetDs) throws NetconfException;
+
+    /**
+     * Sets the value to attribute tiesseEthernet.
+     *
+     * @param tiesseEthernet value of tiesseEthernet
+     * @param session An active NETCONF session
+     * @param targetDs one of running, candidate or startup
+     * @return Boolean to indicate success or failure
+     * @throws NetconfException if the session has any error
+     */
+
+    boolean setTiesseEthernet(TiesseEthernetOpParam tiesseEthernet, NetconfSession session,
+                          DatastoreId targetDs, String intf) throws NetconfException;
+
+
 
     /**
      * Sets the value to attribute tiesseVlan.

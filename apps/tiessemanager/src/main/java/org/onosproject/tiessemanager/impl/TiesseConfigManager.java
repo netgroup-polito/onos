@@ -88,6 +88,8 @@ public class TiesseConfigManager implements TiesseConfigService {
     private List<AccessData> accessModeDataList;
     private List<TrunkData> trunkModeDataList;
     private Map<String, List<VlanId>> trunkModePortVlanMap;
+    private Map<String, List<VlanId>> trunkModeIntfVlanMap;
+
     private DeviceId deviceId;
 
     @Activate
@@ -127,9 +129,11 @@ public class TiesseConfigManager implements TiesseConfigService {
         log.info("Config received. Method readConfig() called. Got trunk mode data list from JSON.");
 
         trunkModePortVlanMap = TrunkModePortVlanMapCreator(trunkModeDataList);
-        log.info("Config received. Method readConfig() called. Created port vlan map for trunk mode data list.");
-        ConfigTiesseDevice(trunkModePortVlanMap);
+        trunkModeIntfVlanMap = TrunkModeIntfVlanMapCreator(trunkModeDataList);
+        log.info("Config received. Method readConfig() called. Created port-vlan map  and intf-vlan map for trunk mode data list.");
+        ConfigTiesseDevice(trunkModePortVlanMap, trunkModeIntfVlanMap);
 
+        log.info("Method readConfig() done.");
     }
 
     /**
@@ -137,7 +141,7 @@ public class TiesseConfigManager implements TiesseConfigService {
      * In particular it sets the Tiesse device's ports in access/trunk mode
      * and assigns them an ip address and a netmask.
      */
-    private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap) { //TODO: add ip address and netmask configuration for the vlan
+    private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap, Map<String, List<VlanId>> trunkModeIntfVlanMap) { //TODO: add ip address and netmask configuration for the vlan
         log.info("Method ConfigTiesseDevice() called.");
         Iterable<Device> devices = deviceService.getAvailableDevices();
         log.info("Method ConfigTiesseDevice() called. Got available devices.");
@@ -149,6 +153,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                     InterfaceConfigTiesse interfaceConfig = handler.behaviour(InterfaceConfigTiesse.class);
                     if (!accessModeDataList.isEmpty()) { //if accessModeData List is not empty
                         for (AccessData accessModeData: accessModeDataList){
+                            String intf = accessModeData.getIntf();
                             String port = accessModeData.getPort();
                             String accessVlanString = accessModeData.getVlan();
                             String accessIpAddr = accessModeData.getIpaddress();
@@ -156,24 +161,44 @@ public class TiesseConfigManager implements TiesseConfigService {
 
                             VlanId accessVlanId = VlanId.vlanId(Short.parseShort(accessVlanString));//parse vlan id from String to VlanId type
                             log.info("Calling method interfaceConfig.addAccessMode()");
-                            interfaceConfig.addAccessMode(port, accessVlanId); //set switch in access mode with port and vlan
+                            //interfaceConfig.addAccessMode(port, accessVlanId); //set switch in access mode with port and vlan
+                            interfaceConfig.addAccessMode(intf, accessVlanId); //set switch in access mode with port and vlan
+
                             log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for access mode");
-                            interfaceConfig.addIpAddrAndNetmaskToInterface("ETH1",accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
+                            interfaceConfig.addIpAddrAndNetmaskToInterface(intf,accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
                             }
                     }
                     if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
-                        if(!trunkModePortVlanMap.isEmpty()) { //if the port-vlanlist map is not empty
+
+                        //To be used if LAN splitting is off on Tiesse
+                        /*if(!trunkModePortVlanMap.isEmpty()) { //if the port-vlanlist map is not empty
                             for (Map.Entry<String, List<VlanId>> portVlanEntry : trunkModePortVlanMap.entrySet()) //for every port-vlanlist map element
                             {
                                 String port = portVlanEntry.getKey();
                                 List<VlanId> vlanIdList = portVlanEntry.getValue();
                                 log.info("Calling method interfaceConfig.addTrunkMode()");
+                                //interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
                                 interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
+
+                            }
+                        }*/
+
+                        if(!trunkModeIntfVlanMap.isEmpty()) { //if the port-vlanlist map is not empty
+                            for (Map.Entry<String, List<VlanId>> intfVlanEntry : trunkModeIntfVlanMap.entrySet()) //for every port-vlanlist map element
+                            {
+                                String intf = intfVlanEntry.getKey();
+                                List<VlanId> vlanIdList = intfVlanEntry.getValue();
+                                log.info("Calling method interfaceConfig.addTrunkMode()");
+                                //interfaceConfig.addTrunkMode(port, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
+                                interfaceConfig.addTrunkMode(intf, vlanIdList); //set switch in trunk mode with port and vlans allowed for that port
+
                             }
                         }
 
+
                         for (TrunkData trunkModeData: trunkModeDataList) { //second cycle to add vlan interface and ip addr
 
+                            String intf = trunkModeData.getIntf();
                             String port = trunkModeData.getPort();
                             String trunkVlanString = trunkModeData.getVlan();
                             String trunkIpAddr = trunkModeData.getIpaddress();
@@ -181,7 +206,7 @@ public class TiesseConfigManager implements TiesseConfigService {
 
                             VlanId trunkVlanId = VlanId.vlanId(Short.parseShort(trunkVlanString));//parse vlan id from String to VlanId type
                             log.info("Calling method interfaceConfig.addIpAddrAndNetmaskToInterface() for trunk mode");
-                            interfaceConfig.addIpAddrAndNetmaskToInterface(port,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
+                            interfaceConfig.addIpAddrAndNetmaskToInterface(intf,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
 
                         }
                     }
@@ -228,6 +253,45 @@ public class TiesseConfigManager implements TiesseConfigService {
             }
         }
         return portVlansMap;
+    }
+
+    /**
+     * Creates a map with interface as key and list of vlans for that interface as value for trunk mode.
+     */
+    public Map<String, List<VlanId>> TrunkModeIntfVlanMapCreator(List<TrunkData> trunkModeDataList){
+        log.info("Method TrunkModePortVlanMapCreator() called.");
+        Map<String, List<VlanId>> intfVlansMap = new HashMap<>(); //map with port, vlan id list for that port
+
+        if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
+
+            for (TrunkData trunkModeData: trunkModeDataList) {
+
+                String intf = trunkModeData.getIntf();
+                String trunkVlanString = trunkModeData.getVlan();
+
+                VlanId trunkVlanId = VlanId.vlanId(Short.parseShort(trunkVlanString));//parse vlan id from String to VlanId type
+
+
+                if(intfVlansMap.isEmpty()) //if the map is empty, first time accessing it
+                {
+                    intfVlansMap.put(intf, new ArrayList<VlanId>()); //add a port with a new empty list
+                    intfVlansMap.get(intf).add(trunkVlanId); //add vlan to the list for that port
+                }
+                else//from the second time accessing the map on
+                {
+                    if(intfVlansMap.containsKey(intf))// port already exists in the map
+                    {
+                        intfVlansMap.get(intf).add(trunkVlanId); //add vlan to the list for that port
+                    }
+                    else // port does not exist in map
+                    {
+                        intfVlansMap.put(intf, new ArrayList<VlanId>()); //add a port with a new empty list
+                        intfVlansMap.get(intf).add(trunkVlanId); //add vlan to the list for that port
+                    }
+                }
+            }
+        }
+        return intfVlansMap;
     }
 
     private class InternalConfigListener implements NetworkConfigListener {

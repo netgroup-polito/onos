@@ -101,6 +101,71 @@ public abstract class AbstractYangServiceImpl {
     protected static final Pattern REGEX_RPC_REPLY_CLOSE =
             Pattern.compile("(</rpc-reply>)");
 
+
+    protected static final Pattern TIESSE_SWITCH_OPEN =
+            Pattern.compile("(<switch)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-switch\">)");
+    protected static final Pattern TIESSE_SWITCH_CLOSE =
+            Pattern.compile("(</switch>)");
+    protected static final Pattern TIESSE_SWITCH_ACTIVE_OPEN =
+            Pattern.compile("(<active>)");
+    protected static final Pattern TIESSE_SWITCH_ACTIVE_CLOSE =
+            Pattern.compile("(</active>)");
+    protected static final Pattern TIESSE_SWITCH_PORT_OPEN =
+            Pattern.compile("(<port>)");
+    protected static final Pattern TIESSE_SWITCH_PORT_CLOSE =
+            Pattern.compile("(</port>)");
+    protected static final Pattern TIESSE_SWITCH_NAME_OPEN =
+            Pattern.compile("(<name>)");
+    protected static final Pattern TIESSE_SWITCH_NAME_CLOSE =
+            Pattern.compile("(</name>)");
+    protected static final Pattern TIESSE_SWITCH_MODE_OPEN =
+            Pattern.compile("(<mode>)");
+    protected static final Pattern TIESSE_SWITCH_MODE_CLOSE =
+            Pattern.compile("(</mode>)");
+    protected static final Pattern TIESSE_SWITCH_VID_OPEN =
+            Pattern.compile("(<vid>)");
+    protected static final Pattern TIESSE_SWITCH_VID_CLOSE =
+            Pattern.compile("(</vid>)");
+
+    protected static final Pattern TIESSE_ETH_OPEN =
+            Pattern.compile("(<eth2)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">)");
+    protected static final Pattern TIESSE_ETH_CLOSE =
+            Pattern.compile("(</eth2>)");
+    protected static final Pattern TIESSE_ETH_ACTIVE_OPEN =
+            Pattern.compile("(<active>)");
+    protected static final Pattern TIESSE_ETH_ACTIVE_CLOSE =
+            Pattern.compile("(</active>)");
+    protected static final Pattern TIESSE_ETH_ACCESS_OPEN =
+            Pattern.compile("(<access-vlan>)");
+    protected static final Pattern TIESSE_ETH_ACCESS_CLOSE =
+            Pattern.compile("(</access-vlan>)");
+    protected static final Pattern TIESSE_ETH_VID_OPEN =
+            Pattern.compile("(<vid>)");
+    protected static final Pattern TIESSE_ETH_VID_CLOSE =
+            Pattern.compile("(</vid>)");
+
+    protected static final Pattern TIESSE_VLAN_OPEN =
+            Pattern.compile("(<vlan)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-vlan\">)");
+    protected static final Pattern TIESSE_VLAN_CLOSE =
+            Pattern.compile("(</vlan>)");
+    protected static final Pattern TIESSE_VLAN_VLANS_OPEN =
+            Pattern.compile("(<vlans>)");
+    protected static final Pattern TIESSE_VLAN_VLANS_CLOSE =
+            Pattern.compile("(</vlans>)");
+    protected static final Pattern TIESSE_VLAN_VID_OPEN =
+            Pattern.compile("(<vid>)");
+    protected static final Pattern TIESSE_VLAN_VID_CLOSE =
+            Pattern.compile("(</vid>)");
+    protected static final Pattern TIESSE_VLAN_INTF_OPEN =
+            Pattern.compile("(<interface>)");
+    protected static final Pattern TIESSE_VLAN_INTF_CLOSE =
+            Pattern.compile("(</interface>)");
+    protected static final Pattern TIESSE_VLAN_PROTOCOL_OPEN =
+            Pattern.compile("(<protocol>)");
+    protected static final Pattern TIESSE_VLAN_PROTOCOL_CLOSE =
+            Pattern.compile("(</protocol>)");
+
+
     @Activate
     public void activate() {
         Set<YangSerializer> yangSer = ((YangSerializerRegistry) yangModelRegistry).getSerializers();
@@ -202,6 +267,102 @@ public abstract class AbstractYangServiceImpl {
         return session.editConfig(targetDs, null, xmlQueryStr);
     }
 
+    /**
+     * Internal method to generically make a NETCONF edit-config call from a set of YANG objects.
+     *
+     * @param moConfig A YANG object model
+     * @param session A NETCONF session
+     * @param targetDs - running,candidate or startup
+     * @param annotations A list of AnnotatedNodeInfos to be added to the DataNodes
+     * @return Boolean value indicating success or failure of command
+     * @throws NetconfException if the session has any error
+     */
+    protected final boolean setNetconfObjectTiesseSwitch(
+            ModelObjectData moConfig, NetconfSession session, DatastoreId targetDs,
+            List<AnnotatedNodeInfo> annotations) throws NetconfException {
+        if (moConfig == null) {
+            throw new NetconfException("Query object cannot be null");
+        } else if (session == null) {
+            throw new NetconfException("Session is null when calling setNetconfObject()");
+        } else if (targetDs == null) {
+            throw new NetconfException("TargetDs is null when calling setNetconfObject()");
+        }
+
+        String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
+
+        String xmlQueryStrWithPrefix = tiesseSwitchRpcAddPrefix(xmlQueryStr);
+        log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
+                ":\n" + xmlQueryStrWithPrefix);
+
+        return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
+    }
+
+    /**
+     * Internal method to generically make a NETCONF edit-config call from a set of YANG objects.
+     *
+     * @param moConfig A YANG object model
+     * @param session A NETCONF session
+     * @param targetDs - running,candidate or startup
+     * @param annotations A list of AnnotatedNodeInfos to be added to the DataNodes
+     * @return Boolean value indicating success or failure of command
+     * @throws NetconfException if the session has any error
+     */
+    protected final boolean setNetconfObjectTiesseEthernet(
+            ModelObjectData moConfig, NetconfSession session, DatastoreId targetDs,
+            List<AnnotatedNodeInfo> annotations) throws NetconfException {
+        if (moConfig == null) {
+            throw new NetconfException("Query object cannot be null");
+        } else if (session == null) {
+            throw new NetconfException("Session is null when calling setNetconfObject()");
+        } else if (targetDs == null) {
+            throw new NetconfException("TargetDs is null when calling setNetconfObject()");
+        }
+
+        String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
+
+        String xmlQueryStrWithPrefix = tiesseEthernetTwoRpcAddPrefix(xmlQueryStr);
+        log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
+                ":\n" + xmlQueryStrWithPrefix);
+
+        return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
+    }
+
+    /**
+     * Internal method to generically make a NETCONF edit-config call from a set of YANG objects.
+     *
+     * @param moConfig A YANG object model
+     * @param session A NETCONF session
+     * @param targetDs - running,candidate or startup
+     * @param annotations A list of AnnotatedNodeInfos to be added to the DataNodes
+     * @return Boolean value indicating success or failure of command
+     * @throws NetconfException if the session has any error
+     */
+    protected final boolean setNetconfObjectTiesseVlan(
+            ModelObjectData moConfig, NetconfSession session, DatastoreId targetDs,
+            List<AnnotatedNodeInfo> annotations) throws NetconfException {
+        if (moConfig == null) {
+            throw new NetconfException("Query object cannot be null");
+        } else if (session == null) {
+            throw new NetconfException("Session is null when calling setNetconfObject()");
+        } else if (targetDs == null) {
+            throw new NetconfException("TargetDs is null when calling setNetconfObject()");
+        }
+
+        String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
+
+        String xmlQueryStrWithPrefix = tiesseVlanRpcAddPrefix(xmlQueryStr);
+        log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
+                ":\n" + xmlQueryStrWithPrefix);
+
+        return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
+    }
+
     protected final String encodeMoToXmlStr(ModelObjectData yangObjectOpParamFilter,
                                             List<AnnotatedNodeInfo> annotations)
             throws NetconfException {
@@ -244,5 +405,49 @@ public abstract class AbstractYangServiceImpl {
         rpcReplyXml = REGEX_RPC_REPLY_CLOSE.matcher(rpcReplyXml).replaceFirst("");
         rpcReplyXml = rpcReplyXml.replace("\t", "");
         return rpcReplyXml;
+    }
+
+    protected static final String tiesseSwitchRpcAddPrefix(String rpcXml) {
+        rpcXml = TIESSE_SWITCH_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:switch xmlns:tiesse-switch=\"urn:ietf:params:xml:ns:yang:tiesse-switch\">");
+        rpcXml = TIESSE_SWITCH_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:switch>");
+        rpcXml = TIESSE_SWITCH_ACTIVE_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:active>");
+        rpcXml = TIESSE_SWITCH_ACTIVE_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:active>");
+        rpcXml = TIESSE_SWITCH_PORT_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:port>");
+        rpcXml = TIESSE_SWITCH_PORT_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:port>");
+        rpcXml = TIESSE_SWITCH_NAME_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:name>");
+        rpcXml = TIESSE_SWITCH_NAME_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:name>");
+        rpcXml = TIESSE_SWITCH_MODE_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:mode>");
+        rpcXml = TIESSE_SWITCH_MODE_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:mode>");
+        rpcXml = TIESSE_SWITCH_VID_OPEN.matcher(rpcXml).replaceFirst("<tiesse-switch:vid>");
+        rpcXml = TIESSE_SWITCH_VID_CLOSE.matcher(rpcXml).replaceFirst("</tiesse-switch:vid>");
+
+        return rpcXml;
+    }
+
+    protected static final String tiesseEthernetTwoRpcAddPrefix(String rpcXml) {
+        rpcXml = TIESSE_ETH_OPEN.matcher(rpcXml).replaceFirst("<eth:eth2 xmlns:eth=\"urn:ietf:params:xml:ns:yang:tiesse-ethernet\">");
+        rpcXml = TIESSE_ETH_CLOSE.matcher(rpcXml).replaceFirst("</eth:eth2>");
+        rpcXml = TIESSE_ETH_ACTIVE_OPEN.matcher(rpcXml).replaceFirst("<eth:active>");
+        rpcXml = TIESSE_ETH_ACTIVE_CLOSE.matcher(rpcXml).replaceFirst("</eth:active>");
+        rpcXml = TIESSE_ETH_ACCESS_OPEN.matcher(rpcXml).replaceFirst("<eth:access-vlan>");
+        rpcXml = TIESSE_ETH_ACCESS_CLOSE.matcher(rpcXml).replaceFirst("</eth:access-vlan>");
+        rpcXml = TIESSE_ETH_VID_OPEN.matcher(rpcXml).replaceFirst("<eth:vid>");
+        rpcXml = TIESSE_ETH_VID_CLOSE.matcher(rpcXml).replaceFirst("</eth:vid>");
+
+        return rpcXml;
+    }
+
+    protected static final String tiesseVlanRpcAddPrefix(String rpcXml) {
+        rpcXml = TIESSE_VLAN_OPEN.matcher(rpcXml).replaceFirst("<vlan:vlan xmlns:vlan=\"urn:ietf:params:xml:ns:yang:tiesse-vlan\">");
+        rpcXml = TIESSE_VLAN_CLOSE.matcher(rpcXml).replaceFirst("</vlan:vlan>");
+        rpcXml = TIESSE_VLAN_VLANS_OPEN.matcher(rpcXml).replaceFirst("<vlan:vlans>");
+        rpcXml = TIESSE_VLAN_VLANS_CLOSE.matcher(rpcXml).replaceFirst("</vlan:vlans>");
+        rpcXml = TIESSE_VLAN_VID_OPEN.matcher(rpcXml).replaceFirst("<vlan:vid>");
+        rpcXml = TIESSE_VLAN_VID_CLOSE.matcher(rpcXml).replaceFirst("</vlan:vid>");
+        rpcXml = TIESSE_VLAN_INTF_OPEN.matcher(rpcXml).replaceFirst("<vlan:interface>");
+        rpcXml = TIESSE_VLAN_INTF_CLOSE.matcher(rpcXml).replaceFirst("</vlan:interface>");
+        rpcXml = TIESSE_VLAN_PROTOCOL_OPEN.matcher(rpcXml).replaceFirst("<vlan:protocol>");
+        rpcXml = TIESSE_VLAN_PROTOCOL_CLOSE.matcher(rpcXml).replaceFirst("</vlan:protocol>");
+        return rpcXml;
     }
 }

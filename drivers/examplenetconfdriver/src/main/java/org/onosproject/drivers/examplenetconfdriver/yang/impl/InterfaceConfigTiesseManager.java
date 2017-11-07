@@ -24,6 +24,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.onosproject.netconf.DatastoreId;
 import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
+import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.TiesseEthernetOpParam;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.tiesseswitch.DefaultYangAutoPrefixSwitch;
@@ -64,6 +65,38 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
         log.info("InterfaceConfigTiesseManager Stopped");
     }
 
+    @Override
+    public boolean setTiesseEthernet(TiesseEthernetOpParam tiesseEthernet, NetconfSession session, DatastoreId targetDs, String intf) throws NetconfException {
+        log.info("Inside setTiesseEthernet() ");
+        ModelObjectData mo = null;
+        if (intf.equals("eth0")) {
+            mo = DefaultModelObjectData.builder()
+                    .addModelObject((ModelObject) tiesseEthernet.eth0()).build();
+        }
+        if (intf.equals("eth1")) {
+            mo = DefaultModelObjectData.builder()
+                    .addModelObject((ModelObject) tiesseEthernet.eth1()).build();
+        }
+        if (intf.equals("eth2")) {
+            mo = DefaultModelObjectData.builder()
+                    .addModelObject((ModelObject) tiesseEthernet.eth2()).build();
+        }
+        if (intf.equals("eth3")) {
+            mo = DefaultModelObjectData.builder()
+                    .addModelObject((ModelObject) tiesseEthernet.eth3()).build();
+        }
+        if (intf.equals("eth4")) {
+            mo = DefaultModelObjectData.builder()
+                    .addModelObject((ModelObject) tiesseEthernet.eth4()).build();
+        }
+        if (intf.equals("eth5")) {
+            mo = DefaultModelObjectData.builder()
+                    .addModelObject((ModelObject) tiesseEthernet.eth5()).build();
+        }
+        log.info("Inside setTiesseEthernet(). Builded model. ");
+        return setNetconfObjectTiesseEthernet(mo, session, targetDs, null);
+    }
+
     /**
      * Call NETCONF edit-config with a configuration.
      */
@@ -74,7 +107,7 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
         ModelObjectData mo = DefaultModelObjectData.builder()
                 .addModelObject((ModelObject) tiesseSwitch.yangAutoPrefixSwitch()).build();
         log.info("Inside setTiesseSwitch(). Builded model. ");
-        return setNetconfObject(mo, session, targetDs, null);
+        return setNetconfObjectTiesseSwitch(mo, session, targetDs, null);
     }
 
     /**
@@ -87,7 +120,7 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
         ModelObjectData mo = DefaultModelObjectData.builder()
                 .addModelObject((ModelObject) tiesseVlan.vlan()).build();
         log.info("Inside setTiesseVlan(). Builded model. ");
-        return setNetconfObject(mo, session, targetDs, null);
+        return setNetconfObjectTiesseVlan(mo, session, targetDs, null);
     }
 
     /**
