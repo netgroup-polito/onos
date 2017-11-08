@@ -41,7 +41,7 @@ public class TiesseConfig extends Config<ApplicationId> {
     private static final String BROADCAST = "broadcast";
 
     /**
-     * Gets port,vlan,ip address and netmask for access mode from configuration.
+     * Gets port,vlan,ip address,netmask,broadcast for access mode from configuration.
      * @return AccessData object
      */
 
@@ -71,7 +71,7 @@ public class TiesseConfig extends Config<ApplicationId> {
     }
 
     /**
-     * Gets port,vlan,ip address and netmask for trunk mode from configuration.
+     * Gets port,vlan,ip address,netmask,broadcast for trunk mode from configuration.
      * @return TrunkData object
      */
 

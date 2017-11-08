@@ -299,7 +299,8 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
 
     /**
-     * Adds IP address and netmask to a VLAN sub-interface.
+     * Adds a VLAN to an interface.
+     * Assign IP address, netmask and broadcast to that VLAN sub-interface.
      *
      * @param intf the name of the interface
      * @param vlanId the VLAN ID

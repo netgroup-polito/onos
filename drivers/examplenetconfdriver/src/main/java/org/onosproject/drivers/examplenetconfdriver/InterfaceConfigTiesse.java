@@ -11,7 +11,9 @@ public interface InterfaceConfigTiesse extends InterfaceConfig{
 
 
     /**
-     * Adds IP address and netmask to the vlan sub-interface (e.g.: set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0)
+     * Adds a VLAN to an interface.
+     * Adds IP address, netmask and broadcast to that vlan sub-interface
+     * (e.g.: set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0  broadcast 192.168.10.255)
      *
      * @param intf the name of the interface
      * @param vlanId the VLAN ID

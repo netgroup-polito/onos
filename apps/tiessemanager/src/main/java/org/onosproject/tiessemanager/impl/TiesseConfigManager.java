@@ -145,7 +145,7 @@ public class TiesseConfigManager implements TiesseConfigService {
     /**
      * Sets the Tiesse device with the received configuration.
      * In particular it sets the Tiesse device's ports in access/trunk mode
-     * and assigns them an ip address and a netmask.
+     * and assigns them ip address, netmask and broadcast.
      */
     private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap, Map<String, List<VlanId>> trunkModeIntfVlanMap) { //TODO: add ip address and netmask configuration for the vlan
         //log.info("Method ConfigTiesseDevice() called.");
