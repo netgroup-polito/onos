@@ -11,16 +11,26 @@ public class TrunkData {
     private String vlan;
     private String ipaddress;
     private String netmask;
+    private String broadcast;
 
     public TrunkData() {
     }
 
-    public TrunkData(String intf, String port, String vlan, String ipaddress, String netmask) {
+    public TrunkData(String intf, String port, String vlan, String ipaddress, String netmask, String broadcast) {
         this.intf = intf;
         this.port = port;
         this.vlan = vlan;
         this.ipaddress = ipaddress;
         this.netmask = netmask;
+        this.broadcast = broadcast;
+    }
+
+    public String getBroadcast() {
+        return broadcast;
+    }
+
+    public void setBroadcast(String broadcast) {
+        this.broadcast = broadcast;
     }
 
     public String getIntf() {
@@ -64,6 +74,6 @@ public class TrunkData {
     }
 
     public boolean isEmpty() {
-        return intf == null && port == null && vlan == null && ipaddress == null && netmask == null;
+        return intf == null && port == null && vlan == null && ipaddress == null && netmask == null && broadcast == null;
     }
 }

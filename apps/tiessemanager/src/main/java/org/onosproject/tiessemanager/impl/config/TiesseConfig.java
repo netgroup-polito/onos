@@ -38,6 +38,7 @@ public class TiesseConfig extends Config<ApplicationId> {
     private static final String MODE = "mode";
     private static final String IP_ADDRESS = "ipaddress";
     private static final String NETMASK = "netmask";
+    private static final String BROADCAST = "broadcast";
 
     /**
      * Gets port,vlan,ip address and netmask for access mode from configuration.
@@ -59,8 +60,9 @@ public class TiesseConfig extends Config<ApplicationId> {
                 String vlan = vlansElem.path(VLAN).asText();
                 String ipaddress = vlansElem.path(IP_ADDRESS).asText();
                 String netmask = vlansElem.path(NETMASK).asText();
+                String broadcast = vlansElem.path(BROADCAST).asText();
 
-                AccessData accessData = new AccessData(intf, port, vlan, ipaddress, netmask);
+                AccessData accessData = new AccessData(intf, port, vlan, ipaddress, netmask, broadcast);
                 accessDataList.add(accessData);
             }
         });
@@ -89,8 +91,9 @@ public class TiesseConfig extends Config<ApplicationId> {
                 String vlan = vlansElem.path(VLAN).asText();
                 String ipaddress = vlansElem.path(IP_ADDRESS).asText();
                 String netmask = vlansElem.path(NETMASK).asText();
+                String broadcast = vlansElem.path(BROADCAST).asText();
 
-                TrunkData trunkData = new TrunkData(intf, port, vlan, ipaddress, netmask);
+                TrunkData trunkData = new TrunkData(intf, port, vlan, ipaddress, netmask, broadcast);
                 trunkDataList.add(trunkData);
             }
         });

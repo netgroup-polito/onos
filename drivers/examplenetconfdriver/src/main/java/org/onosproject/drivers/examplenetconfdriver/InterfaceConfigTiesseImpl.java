@@ -310,7 +310,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
 
     @Override
-    public boolean addVlanAndIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask) {
+    public boolean addVlanAndIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask, String broadcast) {
 
         NetconfController controller = checkNotNull(handler()
                 .get(NetconfController.class));
@@ -326,7 +326,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
         set vlan add vid 10 interface eth1
 
-        set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0
+        set vlan eth1.10 ipaddr 192.168.10.1 netmask 255.255.255.0 broadcast 192.168.10.255
 
         */
 
@@ -344,12 +344,14 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         vlans.protocol("802.1q");
         vlans.yangAutoPrefixInterface(TsInterfaces.fromString(intf)); //set interface = intf
 
-        /*
+
         Ipv4Address ipAddr = Ipv4Address.fromString(ipAddress);
         Netmask netmaskVar = Netmask.fromString(netmask);
+        Ipv4Address ipBroadcast = Ipv4Address.fromString(broadcast);
         vlans.ipaddr(ipAddr);
         vlans.netmask(netmaskVar);
-        */
+        vlans.broadcast(ipBroadcast);
+
 
         vlans.active(Onoff.fromString("on"));
 

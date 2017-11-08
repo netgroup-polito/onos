@@ -17,6 +17,6 @@ public interface InterfaceConfigTiesse extends InterfaceConfig{
      * @param vlanId the VLAN ID
      * @return the result of operation
      */
-    boolean addVlanAndIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask);
+    boolean addVlanAndIpAddrAndNetmaskToInterface(String intf, VlanId vlanId, String ipAddress, String netmask, String broadcast);
 
 }

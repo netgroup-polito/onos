@@ -12,18 +12,28 @@ public class AccessData {
     private String vlan;
     private String ipaddress;
     private String netmask;
+    private String broadcast;
 
 
     public AccessData() {
     }
 
-    public AccessData(String intf, String port, String vlan, String ipaddress, String netmask) {
+    public AccessData(String intf, String port, String vlan, String ipaddress, String netmask, String broadcast) {
 
         this.intf = intf;
         this.port = port;
         this.vlan = vlan;
         this.ipaddress = ipaddress;
         this.netmask = netmask;
+        this.broadcast = broadcast;
+    }
+
+    public String getBroadcast() {
+        return broadcast;
+    }
+
+    public void setBroadcast(String broadcast) {
+        this.broadcast = broadcast;
     }
 
     public String getIntf() {
@@ -68,7 +78,7 @@ public class AccessData {
     }
 
     public boolean isEmpty() {
-        return intf == null && port == null && vlan == null && ipaddress == null && netmask == null;
+        return intf == null && port == null && vlan == null && ipaddress == null && netmask == null && broadcast == null;
     }
 
 }

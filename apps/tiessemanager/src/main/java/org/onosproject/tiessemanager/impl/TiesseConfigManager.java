@@ -164,6 +164,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String accessVlanString = accessModeData.getVlan();
                             String accessIpAddr = accessModeData.getIpaddress();
                             String accessNetmask = accessModeData.getNetmask();
+                            String accessBroadcast = accessModeData.getBroadcast();
 
                             VlanId accessVlanId = VlanId.vlanId(Short.parseShort(accessVlanString));//parse vlan id from String to VlanId type
                             //log.info("Calling method interfaceConfig.addAccessMode()");
@@ -171,7 +172,7 @@ public class TiesseConfigManager implements TiesseConfigService {
                             interfaceConfig.addAccessMode(intf, accessVlanId); //only for lan splitting on:set switch in access mode with port and vlan
 
                             //log.info("Calling method interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface() for access mode");
-                            interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface(intf,accessVlanId,accessIpAddr,accessNetmask); //set vlan with ip address and netmask
+                            interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface(intf,accessVlanId,accessIpAddr,accessNetmask,accessBroadcast); //set vlan with ip address and netmask
                             }
                     }
                     if (!trunkModeDataList.isEmpty()) { //if trunkModeData List is not empty
@@ -195,10 +196,11 @@ public class TiesseConfigManager implements TiesseConfigService {
                             String trunkVlanString = trunkModeData.getVlan();
                             String trunkIpAddr = trunkModeData.getIpaddress();
                             String trunkNetmask = trunkModeData.getNetmask();
+                            String trunkBroadcast = trunkModeData.getBroadcast();
 
                             VlanId trunkVlanId = VlanId.vlanId(Short.parseShort(trunkVlanString));//parse vlan id from String to VlanId type
                             //log.info("Calling method interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface() for trunk mode");
-                            interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface(intf,trunkVlanId,trunkIpAddr,trunkNetmask); //set vlan with ip address and netmask
+                            interfaceConfig.addVlanAndIpAddrAndNetmaskToInterface(intf,trunkVlanId,trunkIpAddr,trunkNetmask, trunkBroadcast); //set vlan with ip address and netmask
 
                         }
                     }

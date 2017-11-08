@@ -51,6 +51,12 @@ module tiesse-ip {
                 "Netmask to be configured when ipaddr is not an ip-prefix - Netmask (a.b.c.d)";
             cli:group "1";
         }
+        leaf broadcast {
+            type ipv4-address;
+            description
+                "Configure broadcast ip address - IP address (a.b.c.d)|Unconfigure broadcast ip address";
+            cli:group "1";
+        }
         leaf mtu {
             type uint16 {
                 range "68..max";

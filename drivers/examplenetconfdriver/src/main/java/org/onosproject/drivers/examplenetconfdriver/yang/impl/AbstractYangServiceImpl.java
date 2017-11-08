@@ -163,14 +163,6 @@ public abstract class AbstractYangServiceImpl {
             Pattern.compile("(<vid>)");
     protected static final Pattern TIESSE_ETH_VID_CLOSE =
             Pattern.compile("(</vid>)");
-    protected static final Pattern TIESSE_ETH_IPADDR_OPEN =
-            Pattern.compile("(<ipaddr>)");
-    protected static final Pattern TIESSE_ETH_IPADDR_CLOSE =
-            Pattern.compile("(</ipaddr>)");
-    protected static final Pattern TIESSE_ETH_NETMASK_OPEN =
-            Pattern.compile("(<netmask>)");
-    protected static final Pattern TIESSE_ETH_NETMASK_CLOSE =
-            Pattern.compile("(</netmask>)");
 
     protected static final Pattern TIESSE_VLAN_OPEN =
             Pattern.compile("(<vlan)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-vlan\">)");
@@ -196,6 +188,18 @@ public abstract class AbstractYangServiceImpl {
             Pattern.compile("(<active>)");
     protected static final Pattern TIESSE_VLAN_ACTIVE_CLOSE =
             Pattern.compile("(</active>)");
+    protected static final Pattern TIESSE_VLAN_IPADDR_OPEN =
+            Pattern.compile("(<ipaddr>)");
+    protected static final Pattern TIESSE_VLAN_IPADDR_CLOSE =
+            Pattern.compile("(</ipaddr>)");
+    protected static final Pattern TIESSE_VLAN_NETMASK_OPEN =
+            Pattern.compile("(<netmask>)");
+    protected static final Pattern TIESSE_VLAN_NETMASK_CLOSE =
+            Pattern.compile("(</netmask>)");
+    protected static final Pattern TIESSE_VLAN_BROADCAST_OPEN =
+            Pattern.compile("(<broadcast>)");
+    protected static final Pattern TIESSE_VLAN_BROADCAST_CLOSE =
+            Pattern.compile("(</broadcast>)");
 
 
     @Activate
@@ -497,10 +501,6 @@ public abstract class AbstractYangServiceImpl {
         rpcXml = TIESSE_ETH_ACCESS_CLOSE.matcher(rpcXml).replaceFirst("</eth:access-vlan>");
         rpcXml = TIESSE_ETH_VID_OPEN.matcher(rpcXml).replaceFirst("<eth:vid>");
         rpcXml = TIESSE_ETH_VID_CLOSE.matcher(rpcXml).replaceFirst("</eth:vid>");
-        rpcXml = TIESSE_ETH_IPADDR_OPEN.matcher(rpcXml).replaceFirst("<eth:ipaddr>");
-        rpcXml = TIESSE_ETH_IPADDR_CLOSE.matcher(rpcXml).replaceFirst("</eth:ipaddr>");
-        rpcXml = TIESSE_ETH_NETMASK_OPEN.matcher(rpcXml).replaceFirst("<eth:netmask>");
-        rpcXml = TIESSE_ETH_NETMASK_CLOSE.matcher(rpcXml).replaceFirst("</eth:netmask>");
 
         return rpcXml;
     }
@@ -523,6 +523,13 @@ public abstract class AbstractYangServiceImpl {
         rpcXml = TIESSE_VLAN_PROTOCOL_CLOSE.matcher(rpcXml).replaceFirst("</vlan:protocol>");
         rpcXml = TIESSE_VLAN_ACTIVE_OPEN.matcher(rpcXml).replaceFirst("<vlan:active>");
         rpcXml = TIESSE_VLAN_ACTIVE_CLOSE.matcher(rpcXml).replaceFirst("</vlan:active>");
+        rpcXml = TIESSE_VLAN_IPADDR_OPEN.matcher(rpcXml).replaceFirst("<vlan:ipaddr>");
+        rpcXml = TIESSE_VLAN_IPADDR_CLOSE.matcher(rpcXml).replaceFirst("</vlan:ipaddr>");
+        rpcXml = TIESSE_VLAN_NETMASK_OPEN.matcher(rpcXml).replaceFirst("<vlan:netmask>");
+        rpcXml = TIESSE_VLAN_NETMASK_CLOSE.matcher(rpcXml).replaceFirst("</vlan:netmask>");
+        rpcXml = TIESSE_VLAN_BROADCAST_OPEN.matcher(rpcXml).replaceFirst("<vlan:broadcast>");
+        rpcXml = TIESSE_VLAN_BROADCAST_CLOSE.matcher(rpcXml).replaceFirst("</vlan:broadcast>");
+
         return rpcXml;
     }
 }
