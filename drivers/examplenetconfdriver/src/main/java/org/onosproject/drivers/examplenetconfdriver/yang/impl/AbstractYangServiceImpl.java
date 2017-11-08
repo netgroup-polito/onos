@@ -329,8 +329,8 @@ public abstract class AbstractYangServiceImpl {
         String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
 
         String xmlQueryStrWithPrefix = tiesseSwitchRpcAddPrefix(xmlQueryStr);
-        log.info("xmlQueryStr -->: {}", xmlQueryStr);
-        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        //log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        //log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
@@ -365,8 +365,8 @@ public abstract class AbstractYangServiceImpl {
         String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
 
         String xmlQueryStrWithPrefix = tiesseEthernetRpcAddPrefix(xmlQueryStr);
-        log.info("xmlQueryStr -->: {}", xmlQueryStr);
-        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        //log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        //log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
@@ -401,8 +401,8 @@ public abstract class AbstractYangServiceImpl {
         String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
 
         String xmlQueryStrWithPrefix = tiesseVlanRpcAddPrefix(xmlQueryStr);
-        log.info("xmlQueryStr -->: {}", xmlQueryStr);
-        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        //log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        //log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
