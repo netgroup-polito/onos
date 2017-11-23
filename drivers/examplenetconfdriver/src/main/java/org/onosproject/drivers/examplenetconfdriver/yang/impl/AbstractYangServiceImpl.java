@@ -201,6 +201,30 @@ public abstract class AbstractYangServiceImpl {
     protected static final Pattern TIESSE_VLAN_BROADCAST_CLOSE =
             Pattern.compile("(</broadcast>)");
 
+    protected static final Pattern TIESSE_BRIDGE_OPEN =
+            Pattern.compile("(<bridge)[ ]*(xmlns=\"urn:ietf:params:xml:ns:yang:tiesse-bridge\">)");
+    protected static final Pattern TIESSE_BRIDGE_CLOSE =
+            Pattern.compile("(</bridge>)");
+    protected static final Pattern TIESSE_BRIDGE_BR_OPEN =
+            Pattern.compile("(<br>)");
+    protected static final Pattern TIESSE_BRIDGE_BR_CLOSE =
+            Pattern.compile("(</br>)");
+    protected static final Pattern TIESSE_BRIDGE_INTERFACE_OPEN =
+            Pattern.compile("(<interface>)");
+    protected static final Pattern TIESSE_BRIDGE_INTERFACE_CLOSE =
+            Pattern.compile("(</interface>)");
+    protected static final Pattern TIESSE_BRIDGE_IPADDR_OPEN =
+            Pattern.compile("(<ipaddr>)");
+    protected static final Pattern TIESSE_BRIDGE_IPADDR_CLOSE =
+            Pattern.compile("(</ipaddr>)");
+    protected static final Pattern TIESSE_BRIDGE_NETMASK_OPEN =
+            Pattern.compile("(<netmask>)");
+    protected static final Pattern TIESSE_BRIDGE_NETMASK_CLOSE =
+            Pattern.compile("(</netmask>)");
+    protected static final Pattern TIESSE_BRIDGE_ACTIVE_OPEN =
+            Pattern.compile("(<active>)");
+    protected static final Pattern TIESSE_BRIDGE_ACTIVE_CLOSE =
+            Pattern.compile("(</active>)");
 
     @Activate
     public void activate() {
@@ -411,6 +435,42 @@ public abstract class AbstractYangServiceImpl {
         return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
     }
 
+    /**
+     * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseBridge.
+     * It also adds the namespace prefix "bridge:" to the fields of the xml message before sending it
+     * (the prefix is mandatory on tiesse imola's netconf server).
+     *
+     * @param moConfig A YANG object model
+     * @param session A NETCONF session
+     * @param targetDs - running,candidate or startup
+     * @param annotations A list of AnnotatedNodeInfos to be added to the DataNodes
+     * @return Boolean value indicating success or failure of command
+     * @throws NetconfException if the session has any error
+     */
+    protected final boolean setNetconfObjectTiesseBridge(
+            ModelObjectData moConfig, NetconfSession session, DatastoreId targetDs,
+            List<AnnotatedNodeInfo> annotations) throws NetconfException {
+        if (moConfig == null) {
+            throw new NetconfException("Query object cannot be null");
+        } else if (session == null) {
+            throw new NetconfException("Session is null when calling setNetconfObject()");
+        } else if (targetDs == null) {
+            throw new NetconfException("TargetDs is null when calling setNetconfObject()");
+        }
+
+        String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
+
+        String xmlQueryStrWithPrefix = tiesseBridgeRpcAddPrefix(xmlQueryStr);
+        log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
+                ":\n" + xmlQueryStrWithPrefix);
+
+
+        log.info("Sending TiesseBridge <edit-config> rpc... ");
+        return session.editConfig(targetDs, null, xmlQueryStrWithPrefix);
+    }
+
     protected final String encodeMoToXmlStr(ModelObjectData yangObjectOpParamFilter,
                                             List<AnnotatedNodeInfo> annotations)
             throws NetconfException {
@@ -529,6 +589,28 @@ public abstract class AbstractYangServiceImpl {
         rpcXml = TIESSE_VLAN_NETMASK_CLOSE.matcher(rpcXml).replaceFirst("</vlan:netmask>");
         rpcXml = TIESSE_VLAN_BROADCAST_OPEN.matcher(rpcXml).replaceFirst("<vlan:broadcast>");
         rpcXml = TIESSE_VLAN_BROADCAST_CLOSE.matcher(rpcXml).replaceFirst("</vlan:broadcast>");
+
+        return rpcXml;
+    }
+
+    /**
+     * Method that adds the namespace prefix "bridge:" to every field of the xml message before sending it,
+     * since the message automatically created from the code is missing it.
+     **/
+
+    protected static final String tiesseBridgeRpcAddPrefix(String rpcXml) {
+        rpcXml = TIESSE_BRIDGE_OPEN.matcher(rpcXml).replaceFirst("<bridge:bridge xmlns:bridge=\"urn:ietf:params:xml:ns:yang:tiesse-bridge\">");
+        rpcXml = TIESSE_BRIDGE_CLOSE.matcher(rpcXml).replaceFirst("</bridge:bridge>");
+        rpcXml = TIESSE_BRIDGE_BR_OPEN.matcher(rpcXml).replaceFirst("<bridge:br>");
+        rpcXml = TIESSE_BRIDGE_BR_CLOSE.matcher(rpcXml).replaceFirst("</bridge:br>");
+        rpcXml = TIESSE_BRIDGE_INTERFACE_OPEN.matcher(rpcXml).replaceFirst("<bridge:interface>");
+        rpcXml = TIESSE_BRIDGE_INTERFACE_CLOSE.matcher(rpcXml).replaceFirst("</bridge:interface>");
+        rpcXml = TIESSE_BRIDGE_IPADDR_OPEN.matcher(rpcXml).replaceFirst("<bridge:ipaddr>");
+        rpcXml = TIESSE_BRIDGE_IPADDR_CLOSE.matcher(rpcXml).replaceFirst("</bridge:ipaddr>");
+        rpcXml = TIESSE_BRIDGE_NETMASK_OPEN.matcher(rpcXml).replaceFirst("<bridge:netmask>");
+        rpcXml = TIESSE_BRIDGE_NETMASK_CLOSE.matcher(rpcXml).replaceFirst("</bridge:netmask>");
+        rpcXml = TIESSE_BRIDGE_ACTIVE_OPEN.matcher(rpcXml).replaceFirst("<bridge:active>");
+        rpcXml = TIESSE_BRIDGE_ACTIVE_CLOSE.matcher(rpcXml).replaceFirst("</bridge:active>");
 
         return rpcXml;
     }

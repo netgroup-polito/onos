@@ -20,6 +20,7 @@ import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
 
 
+import org.onosproject.yang.gen.v1.tiessebridge.rev20170225.TiesseBridgeOpParam;
 import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.TiesseEthernetOpParam;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
@@ -71,6 +72,20 @@ public interface InterfaceConfigTiesseNetconfService {
 
     boolean setTiesseVlan(TiesseVlanOpParam tiesseVlan, NetconfSession session,
                           DatastoreId targetDs) throws NetconfException;
+
+    /**
+     * Sets the value to attribute tiesseBridge.
+     *
+     * @param tiesseBridge value of tiesseBridge
+     * @param session An active NETCONF session
+     * @param targetDs one of running, candidate or startup
+     * @return Boolean to indicate success or failure
+     * @throws NetconfException if the session has any error
+     */
+
+    boolean setTiesseBridge(TiesseBridgeOpParam tiesseBridge, NetconfSession session,
+                          DatastoreId targetDs) throws NetconfException;
+
 
     /**
      * Deletes the value to attribute tiesseVlan.

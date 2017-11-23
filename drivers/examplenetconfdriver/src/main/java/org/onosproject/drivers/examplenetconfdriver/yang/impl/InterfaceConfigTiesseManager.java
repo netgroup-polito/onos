@@ -24,6 +24,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.onosproject.netconf.DatastoreId;
 import org.onosproject.netconf.NetconfException;
 import org.onosproject.netconf.NetconfSession;
+import org.onosproject.yang.gen.v1.tiessebridge.rev20170225.TiesseBridgeOpParam;
 import org.onosproject.yang.gen.v1.tiesseethernet.rev20170523.TiesseEthernetOpParam;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitch;
 import org.onosproject.yang.gen.v1.tiesseswitch.rev20170522.TiesseSwitchOpParam;
@@ -125,6 +126,18 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
                 .addModelObject((ModelObject) tiesseVlan.vlan()).build();
         //log.info("Inside setTiesseVlan(). Builded model. ");
         return setNetconfObjectTiesseVlan(mo, session, targetDs, null);
+    }
+
+    /**
+     * Call NETCONF edit-config with a configuration TiesseBridge.
+     */
+
+    @Override
+    public boolean setTiesseBridge(TiesseBridgeOpParam tiesseBridge, NetconfSession session, DatastoreId targetDs) throws NetconfException {
+        ModelObjectData mo = DefaultModelObjectData.builder()
+                .addModelObject((ModelObject) tiesseBridge.bridge()).build();
+        //log.info("Inside setTiesseVlan(). Builded model. ");
+        return setNetconfObjectTiesseBridge(mo, session, targetDs, null);
     }
 
     /**

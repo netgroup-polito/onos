@@ -89,6 +89,7 @@ public class TiesseConfigManager implements TiesseConfigService {
     private Map<String, List<VlanId>> trunkModePortVlanMap;
     private Map<String, List<VlanId>> trunkModeIntfVlanMap;
 
+
     private DeviceId deviceId;
 
     @Activate
@@ -204,6 +205,44 @@ public class TiesseConfigManager implements TiesseConfigService {
 
                         }
                     }
+
+                    //at this point all access and trunk interfaces are configured
+                    //The following algorithm automatically configures bridges between every trunk interface and the access interface with the same VLAN
+                    //br are created incrementally starting from 0 (e.g.: br0)
+                    //ipaddr and netmask are fixed.
+                    //ipaddr is "192.168.x.1" and netmask is "255.255.255.0" for every bridge created
+                    //ipaddr are assigned incrementally adding 10 to the third byte starting from "192.168.100.1"
+
+                    if (!accessModeDataList.isEmpty() && !trunkModeDataList.isEmpty()) {
+
+                        int brNum = 0;
+                        int ipNum = 100;
+
+                        for (TrunkData trunkModeData: trunkModeDataList) {
+
+                            String intfTrunk = trunkModeData.getIntf();
+                            String vlanTrunk = trunkModeData.getVlan();
+
+                            for (AccessData accessModeData: accessModeDataList){
+
+                                String vlanAccess = accessModeData.getVlan();
+                                String intfAccess = accessModeData.getIntf();
+
+                                if(vlanAccess.equals(vlanTrunk))
+                                {
+                                    String bridgeName = "br" + brNum;
+                                    String intfTrunkWithVlan = intfTrunk + "." + vlanTrunk;
+                                    String intfAccessWithVlan = intfAccess + "." + vlanAccess;
+                                    String bridgeIpAddr = "192.168." + ipNum + ".1";
+                                    String bridgeNetmask = "255.255.255.0";
+                                    interfaceConfig.addBridge(bridgeName, intfTrunkWithVlan, intfAccessWithVlan, bridgeIpAddr, bridgeNetmask);
+                                    brNum++;
+                                    ipNum+=10;
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
