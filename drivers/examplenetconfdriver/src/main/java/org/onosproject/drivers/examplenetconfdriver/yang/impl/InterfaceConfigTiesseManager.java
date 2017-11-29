@@ -141,8 +141,8 @@ public class InterfaceConfigTiesseManager extends AbstractYangServiceImpl implem
     }
 
     /**
-     * Delete the configuration.
-     * Not implemented.
+     * Delete the vlan configuration.
+     * Not implemented, since it's not supported from Tiesse Imola.
      *
      */
 

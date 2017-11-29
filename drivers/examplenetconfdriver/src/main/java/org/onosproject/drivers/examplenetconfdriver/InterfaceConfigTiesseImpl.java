@@ -104,7 +104,7 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
 
          */
 
-        //Configuration for LAN splitting off (NOT USED)
+        //Configuration for LAN splitting off (NOT USED since is not supported yet from Tiesse Imola)
 
         /*
         //Configuration of switch port, vid and access mode
@@ -213,7 +213,6 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         //log.info("tiesseEthernet object configured");
         boolean reply;
         try {
-            //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
             //log.info("Calling interfaceConfigTiesseNetconfService.setTiesseEthernet() ");
             //reply = interfaceConfigTiesseNetconfService.setTiesseSwitch(tiesseSwitch, session, DatastoreId.RUNNING);
             reply = interfaceConfigTiesseNetconfService.setTiesseEthernet(tiesseEthernet, session, DatastoreId.RUNNING, intf);
@@ -238,14 +237,14 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
     @Override
     public boolean addTrunkMode(String intf, List<VlanId> vlanIds) {
 
-        //IMPORTANT: With lan splitting on this method is not to be called.
-        //           Trunk Mode is implicit with lan splitting on.
+        //IMPORTANT: With LAN splitting ON, this method is not to be called.
+        //           Trunk Mode is implicit with LAN splitting ON.
         //           Just need to give the command: set vlan add vid x interface y
         //           This makes that interface accept packets with vlan id x, as if it was a trunk port.
 
 
         /*
-        Example of commands to configure the port in trunk mode( lan splitting off):
+        Example of commands to configure the port in trunk mode(lan splitting off):
 
         set switch port 1 mode trunk
         set switch port 1 allow vid 2
@@ -254,6 +253,8 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         set switch on
 
         */
+
+        //This method is NOT USED since is not supported yet from Tiesse Imola
 
         NetconfController controller = checkNotNull(handler()
                 .get(NetconfController.class));
@@ -364,15 +365,12 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         vlans.active(Onoff.fromString("on"));
 
         vlan.addToVlans(vlans); //add this vlan to the list of vlans
-        tiesseVlan.vlan(vlan); //add
+        tiesseVlan.vlan(vlan);
 
         boolean reply;
         try {
-            //reply = session.requestSync(addAccessModeBuilder(intf, vlanId));
             //log.info("Calling setTiesseVlan()");
             reply = interfaceConfigTiesseNetconfService.setTiesseVlan(tiesseVlan, session, DatastoreId.RUNNING);
-
-
             //String reply =  setNetconfObject(mo, session, DatastoreId.RUNNING, null);
         } catch (NetconfException e) {
             log.error("Failed to configure VLAN ID {} on device {} interface {}.",
@@ -450,8 +448,9 @@ public class InterfaceConfigTiesseImpl extends AbstractHandlerBehaviour
         return reply;
     }
 
-    //TODO: Implement all the methods under this todo for the Tiesse (if necessary)
-
+    //
+    //TODO: The methods below are not implemented yet, since they are not supported by Tiesse Imola.
+    //
 
     /**
      * Builds a request to add an access interface to a VLAN.

@@ -225,6 +225,10 @@ public abstract class AbstractYangServiceImpl {
             Pattern.compile("(<active>)");
     protected static final Pattern TIESSE_BRIDGE_ACTIVE_CLOSE =
             Pattern.compile("(</active>)");
+    protected static final Pattern TIESSE_BRIDGE_NAME_OPEN =
+            Pattern.compile("(<name>)");
+    protected static final Pattern TIESSE_BRIDGE_NAME_CLOSE =
+            Pattern.compile("(</name>)");
 
     @Activate
     public void activate() {
@@ -329,7 +333,7 @@ public abstract class AbstractYangServiceImpl {
 
     /**
      * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseSwitch.
-     * It also adds the namespace prefix "tiesse-switch:" to the fields of the xml message before sending it
+     * It also adds the namespace prefix "tiesse-switch:" to the tags of the xml message before sending it
      * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
@@ -365,7 +369,7 @@ public abstract class AbstractYangServiceImpl {
 
     /**
      * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseEthernet.
-     * It also adds the namespace prefix "eth:" to the fields of the xml message before sending it
+     * It also adds the namespace prefix "eth:" to the tags of the xml message before sending it
      * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
@@ -401,7 +405,7 @@ public abstract class AbstractYangServiceImpl {
 
     /**
      * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseVlan.
-     * It also adds the namespace prefix "vlan:" to the fields of the xml message before sending it
+     * It also adds the namespace prefix "vlan:" to the tags of the xml message before sending it
      * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
@@ -437,7 +441,7 @@ public abstract class AbstractYangServiceImpl {
 
     /**
      * Internal method to make a NETCONF edit-config call from a set of YANG objects for TiesseBridge.
-     * It also adds the namespace prefix "bridge:" to the fields of the xml message before sending it
+     * It also adds the namespace prefix "bridge:" to the tags of the xml message before sending it
      * (the prefix is mandatory on tiesse imola's netconf server).
      *
      * @param moConfig A YANG object model
@@ -461,8 +465,8 @@ public abstract class AbstractYangServiceImpl {
         String xmlQueryStr = encodeMoToXmlStr(moConfig, annotations);
 
         String xmlQueryStrWithPrefix = tiesseBridgeRpcAddPrefix(xmlQueryStr);
-        log.info("xmlQueryStr -->: {}", xmlQueryStr);
-        log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
+        //log.info("xmlQueryStr -->: {}", xmlQueryStr);
+        //log.info("xmlQueryStrWithPrefix -->: {}", xmlQueryStrWithPrefix);
         log.debug("Sending <edit-config> query on NETCONF session " + session.getSessionId() +
                 ":\n" + xmlQueryStrWithPrefix);
 
@@ -516,8 +520,9 @@ public abstract class AbstractYangServiceImpl {
     }
 
 /**
- * Method that adds the namespace prefix "tiesse-switch:" to every field of the xml message before sending it,
+ * Method that adds the namespace prefix "tiesse-switch:" to every tag of the xml message before sending it,
  * since the message automatically created from the code is missing it.
+ * The prefix "tiesse-switch:" is mandatory on Tiesse Imola's netconf server.
  **/
 
     protected static final String tiesseSwitchRpcAddPrefix(String rpcXml) {
@@ -538,8 +543,9 @@ public abstract class AbstractYangServiceImpl {
     }
 
     /**
-     * Method that adds the namespace prefix "eth:" to every field of the xml message before sending it,
+     * Method that adds the namespace prefix "eth:" to every tag of the xml message before sending it,
      * since the message automatically created from the code is missing it.
+     * The prefix "eth:" is mandatory on Tiesse Imola's netconf server.
      **/
 
     protected static final String tiesseEthernetRpcAddPrefix(String rpcXml) {
@@ -566,8 +572,9 @@ public abstract class AbstractYangServiceImpl {
     }
 
     /**
-     * Method that adds the namespace prefix "vlan:" to every field of the xml message before sending it,
+     * Method that adds the namespace prefix "vlan:" to every tag of the xml message before sending it,
      * since the message automatically created from the code is missing it.
+     * The prefix "vlan:" is mandatory on Tiesse Imola's netconf server.
      **/
 
     protected static final String tiesseVlanRpcAddPrefix(String rpcXml) {
@@ -594,8 +601,9 @@ public abstract class AbstractYangServiceImpl {
     }
 
     /**
-     * Method that adds the namespace prefix "bridge:" to every field of the xml message before sending it,
+     * Method that adds the namespace prefix "bridge:" to every tag of the xml message before sending it,
      * since the message automatically created from the code is missing it.
+     * The prefix "bridge:" is mandatory on Tiesse Imola's netconf server.
      **/
 
     protected static final String tiesseBridgeRpcAddPrefix(String rpcXml) {
@@ -603,8 +611,16 @@ public abstract class AbstractYangServiceImpl {
         rpcXml = TIESSE_BRIDGE_CLOSE.matcher(rpcXml).replaceFirst("</bridge:bridge>");
         rpcXml = TIESSE_BRIDGE_BR_OPEN.matcher(rpcXml).replaceFirst("<bridge:br>");
         rpcXml = TIESSE_BRIDGE_BR_CLOSE.matcher(rpcXml).replaceFirst("</bridge:br>");
+        rpcXml = TIESSE_BRIDGE_NAME_OPEN.matcher(rpcXml).replaceFirst("<bridge:name>");
+        rpcXml = TIESSE_BRIDGE_NAME_CLOSE.matcher(rpcXml).replaceFirst("</bridge:name>");
         rpcXml = TIESSE_BRIDGE_INTERFACE_OPEN.matcher(rpcXml).replaceFirst("<bridge:interface>");
         rpcXml = TIESSE_BRIDGE_INTERFACE_CLOSE.matcher(rpcXml).replaceFirst("</bridge:interface>");
+        rpcXml = TIESSE_BRIDGE_NAME_OPEN.matcher(rpcXml).replaceFirst("<bridge:name>");
+        rpcXml = TIESSE_BRIDGE_NAME_CLOSE.matcher(rpcXml).replaceFirst("</bridge:name>");
+        rpcXml = TIESSE_BRIDGE_INTERFACE_OPEN.matcher(rpcXml).replaceFirst("<bridge:interface>");
+        rpcXml = TIESSE_BRIDGE_INTERFACE_CLOSE.matcher(rpcXml).replaceFirst("</bridge:interface>");
+        rpcXml = TIESSE_BRIDGE_NAME_OPEN.matcher(rpcXml).replaceFirst("<bridge:name>");
+        rpcXml = TIESSE_BRIDGE_NAME_CLOSE.matcher(rpcXml).replaceFirst("</bridge:name>");
         rpcXml = TIESSE_BRIDGE_IPADDR_OPEN.matcher(rpcXml).replaceFirst("<bridge:ipaddr>");
         rpcXml = TIESSE_BRIDGE_IPADDR_CLOSE.matcher(rpcXml).replaceFirst("</bridge:ipaddr>");
         rpcXml = TIESSE_BRIDGE_NETMASK_OPEN.matcher(rpcXml).replaceFirst("<bridge:netmask>");

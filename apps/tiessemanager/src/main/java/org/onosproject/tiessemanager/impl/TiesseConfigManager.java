@@ -135,6 +135,7 @@ public class TiesseConfigManager implements TiesseConfigService {
         trunkModeDataList = config.getTrunkModeData();
         //log.info("Config received. Method readConfig() called. Got trunk mode data list from JSON.");
 
+        //These maps are used only when LAN splitting is OFF.
         trunkModePortVlanMap = TrunkModePortVlanMapCreator(trunkModeDataList);
         trunkModeIntfVlanMap = TrunkModeIntfVlanMapCreator(trunkModeDataList);
         //log.info("Config received. Method readConfig() called. Created port-vlan map  and intf-vlan map for trunk mode data list.");
@@ -147,6 +148,7 @@ public class TiesseConfigManager implements TiesseConfigService {
      * Sets the Tiesse device with the received configuration.
      * In particular it sets the Tiesse device's ports in access/trunk mode
      * and assigns them ip address, netmask and broadcast.
+     * Then automatically creates bridges between the trunk port and every access port with the same vlan.
      */
     private void ConfigTiesseDevice(Map<String, List<VlanId>> trunkModePortVlanMap, Map<String, List<VlanId>> trunkModeIntfVlanMap) { //TODO: add ip address and netmask configuration for the vlan
         //log.info("Method ConfigTiesseDevice() called.");
@@ -206,10 +208,11 @@ public class TiesseConfigManager implements TiesseConfigService {
                         }
                     }
 
-                    //at this point all access and trunk interfaces are configured
+                    //At this point all access and trunk interfaces are configured.
+                    //
                     //The following algorithm automatically configures bridges between every trunk interface and the access interface with the same VLAN
                     //br are created incrementally starting from 0 (e.g.: br0)
-                    //ipaddr and netmask are fixed.
+                    //ipaddr and netmask are fixed
                     //ipaddr is "192.168.x.1" and netmask is "255.255.255.0" for every bridge created
                     //ipaddr are assigned incrementally adding 10 to the third byte starting from "192.168.100.1"
 
@@ -251,6 +254,7 @@ public class TiesseConfigManager implements TiesseConfigService {
 
     /**
      * Creates a map with port as key and list of vlans for that port as value for trunk mode.
+     * Used only with LAN splitting OFF.
      */
     public Map<String, List<VlanId>> TrunkModePortVlanMapCreator(List<TrunkData> trunkModeDataList){
         //log.info("Method TrunkModePortVlanMapCreator() called.");
@@ -290,6 +294,7 @@ public class TiesseConfigManager implements TiesseConfigService {
 
     /**
      * Creates a map with interface as key and list of vlans for that interface as value for trunk mode.
+     * Used only with LAN splitting OFF.
      */
     public Map<String, List<VlanId>> TrunkModeIntfVlanMapCreator(List<TrunkData> trunkModeDataList){
         //log.info("Method TrunkModePortVlanMapCreator() called.");

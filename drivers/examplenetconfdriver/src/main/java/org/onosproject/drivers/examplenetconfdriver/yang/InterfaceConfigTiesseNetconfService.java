@@ -88,8 +88,8 @@ public interface InterfaceConfigTiesseNetconfService {
 
 
     /**
-     * Deletes the value to attribute tiesseVlan.
-     * Not implemented.
+     * Deletes the value with attribute tiesseVlan.
+     * Not implemented, since it's not supported from Tiesse Imola.
      *
      * @param tiesseVlan value of tiesseVlan
      * @param session An active NETCONF session
